@@ -4,6 +4,7 @@ class Program
 {
     static void Main(string[] args)
     {
-        Console.WriteLine("Hello, World!");
+        string key = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
+        Console.WriteLine(key);
     }
 }
