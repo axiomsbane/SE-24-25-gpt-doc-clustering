@@ -18,14 +18,13 @@ class Program
         //     ChatCompletion completion = client.CompleteChat(Console.ReadLine());
         //     Console.WriteLine($"[ASSISTANT]: {completion.Content[0].Text}");
         // }
-        CsvDataReader service = new CsvDataReader("/Users/axiom/Downloads/df_file.csv");
-        List<string[]> data = service.Read();
-        
+        IReadInputData service = new CsvDataReader(Environment.GetEnvironmentVariable("INPUT_FILE_PATH"));
         
         List<Document> documents = service.ReadDocuments();
+        Console.WriteLine("Document Count: " + documents.Count);
         for (int i = 0; i < 3; i++)
         {
-            Console.WriteLine(documents[i].Content);
+            Console.WriteLine(documents[i].Content.Trim());
             Console.WriteLine("#############################\n#########################\n######################");
             Console.WriteLine(documents[i].Category);
             Console.WriteLine("#############################\n#########################\n######################");

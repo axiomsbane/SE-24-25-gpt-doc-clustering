@@ -19,21 +19,6 @@ public class CsvDataReader : IReadInputData
         _filePath = filePath;
     }
     
-    public List<string[]> Read()
-    {
-        var data = new List<string[]>();
-
-        using var reader = new StreamReader(_filePath);
-        while (!reader.EndOfStream)
-        {
-            var line = reader.ReadLine();
-            if (line == null) continue;
-            var values = line.Split(';');
-            data.Add(values);
-        }
-
-        return data;
-    }
 
     public List<Models.Document> ReadDocuments()
     {
