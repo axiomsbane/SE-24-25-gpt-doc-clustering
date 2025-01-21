@@ -2,5 +2,5 @@ namespace GPTDocumentClustering.Interfaces.InputData;
 
 public interface IReadInputData
 {
-    List<string[]> Read();
+    public List<Models.Document> ReadDocuments();
 }
