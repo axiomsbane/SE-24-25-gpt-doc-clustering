@@ -1,67 +1,48 @@
-﻿//namespace GPTDocumentClustering;
-//using OpenAI.Chat;
+﻿using System.Text.RegularExpressions;
+using GPTDocumentClustering.Interfaces.InputData;
+using GPTDocumentClustering.Models;
+using GPTDocumentClustering.Services.InputData;
+using OpenAI.Embeddings;
 
-//class Program
-//{
-//    static void Main(string[] args)
-//    {
-//        ChatClient client = new(model: "gpt-4o", apiKey: Environment.GetEnvironmentVariable("OPENAI_API_KEY"));
+namespace GPTDocumentClustering;
+using OpenAI.Chat;
 
-//        Console.WriteLine("Please type the number of chat messages you want: ")
-//        int numMessages = Convert.ToInt32(Console.ReadLine());
-//        for (int i = 0; i < numMessages; i++)
-//        {
-//            ChatCompletion completion = client.CompleteChat(Console.ReadLine());
-//            Console.WriteLine($"[ASSISTANT]: {completion.Content[0].Text}");
-//        }
-
-//    }
-//}
-namespace GPTDocumentClustering
+class Program
 {
-    using OpenAI.Chat;
-    using System;
-
-    public class Program
+    static void Main(string[] args)
     {
-        private readonly ChatClient _client;
-        private readonly TextWriter _output;
-        private readonly TextReader _input;
-
-        // Constructor to allow dependency injection for easier testing.
-        public Program(ChatClient client, TextReader input = null, TextWriter output = null)
+        // ChatClient client = new(model: "gpt-4o", apiKey: Environment.GetEnvironmentVariable("OPENAI_API_KEY"));
+        //
+        //
+        // int numMessages = Convert.ToInt32(Console.ReadLine());
+        // for (int i = 0; i < numMessages; i++)
+        // {
+        //     ChatCompletion completion = client.CompleteChat(Console.ReadLine());
+        //     Console.WriteLine($"[ASSISTANT]: {completion.Content[0].Text}");
+        // }
+        IReadInputData service = new CsvDataReader(Environment.GetEnvironmentVariable("INPUT_FILE_PATH"));
+        
+        List<Document> documents = service.ReadDocuments();
+        Console.WriteLine("Document Count: " + documents.Count);
+        foreach (Document document in documents)
         {
-            _client = client;
-            _input = input ?? Console.In;
-            _output = output ?? Console.Out;
+            document.Content = Regex.Replace(document.Content.Trim(), @"\r\n?|\n", " ");
+        }
+        
+        EmbeddingClient client = new("text-embedding-3-small", Environment.GetEnvironmentVariable("OPENAI_API_KEY"));
+        EmbeddingGenerationOptions options = new() { Dimensions = 15 };
+        
+        
+        for (int i = 0; i < 3; i++)
+        {
+            OpenAIEmbedding embedding = client.GenerateEmbedding(documents[i].Content, options);
+            ReadOnlyMemory<float> vector = embedding.ToFloats();
+            Console.WriteLine(string.Join(", ", vector.ToArray().Select(x => x.ToString("F4"))));
+            //Console.WriteLine(Regex.Replace(documents[i].Content.Trim(), @"\r\n?|\n", " "));
+            Console.WriteLine("#############################\n#########################\n######################");
+            Console.WriteLine(documents[i].Category);
+            Console.WriteLine("#############################\n#########################\n######################");
         }
 
-        // Run method to handle user input/output and interact with the ChatClient
-        public void Run()
-        {
-            _output.WriteLine("Please type the number of chat messages you want: ");
-            int numMessages;
-            if (!int.TryParse(_input.ReadLine(), out numMessages))
-            {
-                _output.WriteLine("Invalid input.");
-                return;
-            }
-
-            for (int i = 0; i < numMessages; i++)
-            {
-                _output.WriteLine("Please type your message: ");
-                var userInput = _input.ReadLine();
-                ChatCompletion completion = _client.CompleteChat(userInput);
-                _output.WriteLine($"[ASSISTANT]: {completion.Content[0].Text}");
-            }
-        }
-
-        // Main method to start the program (used for normal execution, but not for testing).
-        public static void Main(string[] args)
-        {
-            var client = new ChatClient(model: "gpt-4o", apiKey: Environment.GetEnvironmentVariable("OPENAI_API_KEY"));
-            var program = new Program(client);
-            program.Run();
-        }
     }
 }
