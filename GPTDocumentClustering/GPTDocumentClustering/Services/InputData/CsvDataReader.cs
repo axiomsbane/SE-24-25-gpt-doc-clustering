@@ -1,7 +1,8 @@
 using System.Globalization;
-using System.Reflection.Metadata;
+using System.Text.RegularExpressions;
 using CsvHelper;
 using GPTDocumentClustering.Interfaces.InputData;
+using GPTDocumentClustering.Models;
 
 namespace GPTDocumentClustering.Services.InputData;
 
@@ -20,14 +21,21 @@ public class CsvDataReader : IReadInputData
     }
     
 
-    public List<Models.Document> ReadDocuments()
+    public List<Document> ReadDocuments()
     {
+        List<Document> documents = new();
         using (var reader = new StreamReader(_filePath))
         using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
         {
             csv.Context.RegisterClassMap<MyCsvMap>();
             var records = csv.GetRecords<Models.Document>();
-            return records.ToList();
+            documents = records.ToList();
         }
+        
+        foreach (Document document in documents)
+        {
+            document.Content = Regex.Replace(document.Content.Trim(), @"\r\n?|\n", " ");
+        }
+        return documents;
     }
 }

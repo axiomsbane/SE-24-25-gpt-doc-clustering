@@ -1,14 +1,17 @@
+using System.Text.Json.Serialization;
+
 namespace GPTDocumentClustering.Models;
 
 public class Document
 {
     // Primary identifier
-    public Guid Id { get; set; } = Guid.NewGuid();
-    public string Content { get; set; } 
+    [JsonIgnore]
+    public string Content { get; set; }
     public string Category { get; set; }
 
     // Embedding-related properties
     public float[]? Embedding { get; set; }
+    [JsonIgnore]
     public int? ClusterId { get; set; }
 
     public Document(string content, string category)
