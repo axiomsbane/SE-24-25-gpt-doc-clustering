@@ -8,7 +8,7 @@ public class Document
     public string Category { get; set; }
 
     // Embedding-related properties
-    public double[]? Embedding { get; set; }
+    public float[]? Embedding { get; set; }
     public int? ClusterId { get; set; }
 
     public Document(string content, string category)

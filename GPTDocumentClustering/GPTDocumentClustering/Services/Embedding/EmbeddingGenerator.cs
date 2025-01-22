@@ -1,15 +1,15 @@
 using OpenAI.Embeddings;
 
-namespace GPTDocumentClustering.Services;
+namespace GPTDocumentClustering.Services.Embedding;
 
 public class EmbeddingGenerator
 {
     private EmbeddingClient _client = new("text-embedding-3-small", Environment.GetEnvironmentVariable("OPENAI_API_KEY"));
     private EmbeddingGenerationOptions _options = new() { Dimensions = 15 };
 
-    public float[] GenerateEmbeddings(string text)
+    public Task<float[]>  GenerateEmbeddings(string text)
     {
         OpenAIEmbedding embedding = _client.GenerateEmbedding(text, _options);
-        return embedding.ToFloats().ToArray();
+        return Task.FromResult(embedding.ToFloats().ToArray());
     }
 }

@@ -11,6 +11,14 @@ class Program
 {
     static void Main(string[] args)
     {
+        TestMethod();
+        
+        
+
+    }
+
+    static void TestMethod()
+    {
         IReadInputData service = new CsvDataReader(Environment.GetEnvironmentVariable("INPUT_FILE_PATH"));
         
         List<Document> documents = service.ReadDocuments();
@@ -34,6 +42,5 @@ class Program
             Console.WriteLine(documents[i].Category);
             Console.WriteLine("#############################\n#########################\n######################");
         }
-
     }
 }
