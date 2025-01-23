@@ -28,7 +28,8 @@ class Program
             var embeddings = await embeddingService.GenerateEmbeddings(documents);
             
 
-        } catch (Exception ex)
+        } 
+        catch (Exception ex)
         {
             Console.WriteLine($"An error occurred: {ex.Message}");
         }
