@@ -1,8 +1,10 @@
 ﻿using System.Diagnostics;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using GPTDocumentClustering.Helper;
 using GPTDocumentClustering.Interfaces.InputData;
 using GPTDocumentClustering.Models;
+using GPTDocumentClustering.Services.Embedding;
 using GPTDocumentClustering.Services.InputData;
 using OpenAI.Embeddings;
 
@@ -10,17 +12,34 @@ namespace GPTDocumentClustering;
 
 class Program
 {
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
-        TestMethod();
         
-        
+        //TestMethod();
+        var dataReaderService = new CsvDataReader(Environment.GetEnvironmentVariable("INPUT_FILE_PATH"));
+        var embeddingService = new EmbeddingService();
+
+        try
+        {
+            // 1. Load Documents
+            var documents =  dataReaderService.ReadDocuments();
+            
+            //Generate Embeddings
+            var embeddings = await embeddingService.GenerateEmbeddings(documents);
+            
+
+        } catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+        }
+
+
 
     }
 
     static void TestMethod()
     {
-        IReadInputData service = new CsvDataReader(Environment.GetEnvironmentVariable("INPUT_FILE_PATH"));
+        IReadInputData service = new CsvDataReader(AppConstants.DataConstants.InputDataFilePath);
         
         List<Document> documents = service.ReadDocuments();
         Console.WriteLine("Document Count: " + documents.Count);
