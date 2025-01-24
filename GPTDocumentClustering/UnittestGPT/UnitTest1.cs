@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using Moq;
 using GPTDocumentClustering.Interfaces.InputData;
 using GPTDocumentClustering.Models;
@@ -8,13 +9,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Assert = NUnit.Framework.Assert;
 
-namespace GPTDocumentClustering.Tests
+namespace UnittestGPT
 {
     public class ProgramTests
     {
-        private Mock<IReadInputData> _mockService;
-        private Mock<EmbeddingClient> _mockEmbeddingClient;
+        private Mock<IReadInputData>? _mockService;
+        private Mock<EmbeddingClient>? _mockEmbeddingClient;
 
         [SetUp]
         public void Setup()
@@ -23,7 +25,7 @@ namespace GPTDocumentClustering.Tests
             _mockService = new Mock<IReadInputData>();
 
             // Mock the EmbeddingClient
-            _mockEmbeddingClient = new Mock<EmbeddingClient>("text-embedding-3-small", "fake-api-key");
+            _mockEmbeddingClient = new Mock<EmbeddingClient>("text-embedding-3-small", Environment.GetEnvironmentVariable("OPENAI_API_KEY"));
         }
 
         [Test]
@@ -43,9 +45,9 @@ namespace GPTDocumentClustering.Tests
             var result = _mockService.Object.ReadDocuments();
 
             // Assert: Verify the documents returned match the expected output
-            Assert.AreEqual(3, result.Count);
-            Assert.AreEqual("This is document 1.", result[0].Content);
-            Assert.AreEqual("Category1", result[0].Category);
+            ClassicAssert.AreEqual(3, result.Count);
+            ClassicAssert.AreEqual("This is document 1.", result[0].Content);
+            ClassicAssert.AreEqual("Category1", result[0].Category);
         }
 
         [Test]
@@ -58,7 +60,8 @@ namespace GPTDocumentClustering.Tests
             var cleanedContent = Regex.Replace(document.Content.Trim(), @"\r\n?|\n", " ");
 
             // Assert: Verify the content is cleaned as expected
-            Assert.AreEqual("This is document 1.", cleanedContent);
+
+            ClassicAssert.AreEqual("This is document 1.", cleanedContent);
         }
 
         [Test]
@@ -84,10 +87,10 @@ namespace GPTDocumentClustering.Tests
             var vector = embedding.ToFloats();
 
             // Assert: Verify the embeddings are generated correctly
-            Assert.AreEqual(3, vector.Length);
-            Assert.AreEqual(0.1f, vector[0]);
-            Assert.AreEqual(0.2f, vector[1]);
-            Assert.AreEqual(0.3f, vector[2]);
+            ClassicAssert.AreEqual(3, vector.Length);
+            ClassicAssert.AreEqual(0.1f, vector[0]);
+            ClassicAssert.AreEqual(0.2f, vector[1]);
+            ClassicAssert.AreEqual(0.3f, vector[2]);
         }
 
         [Test]
@@ -110,9 +113,10 @@ namespace GPTDocumentClustering.Tests
             var embedding = _mockEmbeddingClient.Object.GenerateEmbedding(documents[0].Content, new EmbeddingGenerationOptions { Dimensions = 15 });
             var vector = embedding.ToFloats();
 
+
             // Assert: Verify that the output is formatted to 4 decimal places
             var formattedVector = string.Join(", ", vector.ToArray().Select(x => x.ToString("F4")));
-            Assert.AreEqual("0.1235, 0.6543, 0.9877", formattedVector);
+            ClassicAssert.AreEqual("0.1235, 0.6543, 0.9877", formattedVector);
         }
     }
 }
