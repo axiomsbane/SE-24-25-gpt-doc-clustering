@@ -32,12 +32,13 @@ class Program
             // 5. Visualization
             Console.WriteLine("Visualization with PCA");
             
+            
 
         } 
         catch (Exception ex)
         {
             Console.WriteLine($"An error occurred: {ex.Message}");
-        }
+        } 
 
 
 
