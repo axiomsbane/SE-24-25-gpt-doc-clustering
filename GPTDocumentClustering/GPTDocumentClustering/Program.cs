@@ -12,12 +12,14 @@ namespace GPTDocumentClustering;
 
 class Program
 {
-    static async Task Main(string[] args)
+    static async Task Main(string[] args)try karda
     {
         
         //TestMethod();
         var dataReaderService = new CsvDataReader(Environment.GetEnvironmentVariable("INPUT_FILE_PATH"));
         var embeddingService = new EmbeddingService();
+
+        var visualizationService = new ClusterVisualizationService();
 
         try
         {
@@ -26,6 +28,9 @@ class Program
             
             //Generate Embeddings
             var embeddings = await embeddingService.GenerateEmbeddings(documents);
+
+            // 5. Visualization
+            Console.WriteLine("Visualization with PCA");
             
 
         } 
