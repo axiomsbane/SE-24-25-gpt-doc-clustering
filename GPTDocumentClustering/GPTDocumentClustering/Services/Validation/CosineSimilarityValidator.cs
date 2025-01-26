@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using GPTDocumentClustering.Services.Validation;
@@ -45,36 +46,44 @@ namespace GPTDocumentClustering.Services.Validation
             return allWords.Select(word => words.Count(w => w == word)).Select(count => (double)count).ToArray();
         }
 
-        // Method to process input documents and return the cosine similarity between them
-        public static void ProcessDocumentsAndCompare()
+        // Method to process documents from file paths and return the cosine similarity between them
+        public static void ProcessDocumentsFromFilePaths(string filePath1, string filePath2)
         {
-            // Collect two documents from the user
-            Console.WriteLine("Please enter the first document:");
-            string document1 = Console.ReadLine();
+            try
+            {
+                // Read the contents of the documents from the file paths
+                string document1 = File.ReadAllText(filePath1);
+                string document2 = File.ReadAllText(filePath2);
 
-            Console.WriteLine("Please enter the second document:");
-            string document2 = Console.ReadLine();
+                // Collect all unique words from both documents
+                HashSet<string> allWords = new HashSet<string>();
 
-            // Collect all unique words from both documents
-            HashSet<string> allWords = new HashSet<string>();
+                allWords.UnionWith(document1.Split(new[] { ' ', '.', ',', ';', ':', '!', '?' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(word => word.ToLower()));
 
-            allWords.UnionWith(document1.Split(new[] { ' ', '.', ',', ';', ':', '!', '?' }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(word => word.ToLower()));
+                allWords.UnionWith(document2.Split(new[] { ' ', '.', ',', ';', ':', '!', '?' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(word => word.ToLower()));
 
-            allWords.UnionWith(document2.Split(new[] { ' ', '.', ',', ';', ':', '!', '?' }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(word => word.ToLower()));
+                // Create vectors for both documents
+                double[] vector1 = CreateDocumentVector(document1, allWords);
+                double[] vector2 = CreateDocumentVector(document2, allWords);
 
-            // Create vectors for both documents
-            double[] vector1 = CreateDocumentVector(document1, allWords);
-            double[] vector2 = CreateDocumentVector(document2, allWords);
+                // Calculate the cosine similarity
+                double similarity = CalculateCosineSimilarity(vector1, vector2);
+                Console.WriteLine($"Cosine Similarity: {similarity}");
 
-            // Calculate the cosine similarity
-            double similarity = CalculateCosineSimilarity(vector1, vector2);
-            Console.WriteLine($"Cosine Similarity: {similarity}");
-
-            // Check if they are similar enough to be clustered together (using a default threshold of 0.75)
-            bool areSimilar = IsSimilarEnough(vector1, vector2);
-            Console.WriteLine($"Are Documents Similar Enough for Clustering: {areSimilar}");
+                // Check if they are similar enough to be clustered together (using a default threshold of 0.75)
+                bool areSimilar = IsSimilarEnough(vector1, vector2);
+                Console.WriteLine($"Are Documents Similar Enough for Clustering: {areSimilar}");
+            }
+            catch (FileNotFoundException ex)
+            {
+                Console.WriteLine($"Error: File not found. {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+            }
         }
     }
 }
@@ -83,7 +92,14 @@ class Program
 {
     static void Main()
     {
-        // Run the process to compare two user-input documents
-        CosineSimilarityValidator.ProcessDocumentsAndCompare();
+        // Ask the user for file paths
+        Console.WriteLine("Please enter the path to the first document:");
+        string filePath1 = Console.ReadLine();
+
+        Console.WriteLine("Please enter the path to the second document:");
+        string filePath2 = Console.ReadLine();
+
+        // Process the documents and compare them
+        CosineSimilarityValidator.ProcessDocumentsFromFilePaths(filePath1, filePath2);
     }
 }
