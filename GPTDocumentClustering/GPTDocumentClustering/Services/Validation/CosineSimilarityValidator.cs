@@ -46,8 +46,8 @@ namespace GPTDocumentClustering.Services.Validation
             return allWords.Select(word => words.Count(w => w == word)).Select(count => (double)count).ToArray();
         }
 
-        // Method to process documents from file paths and return the cosine similarity between them
-        public static void ProcessDocumentsFromFilePaths(string filePath1, string filePath2)
+        // Function to calculate the cosine similarity between two documents given their file paths
+        public static double CalculateCosineSimilarityFromFiles(string filePath1, string filePath2)
         {
             try
             {
@@ -70,20 +70,32 @@ namespace GPTDocumentClustering.Services.Validation
 
                 // Calculate the cosine similarity
                 double similarity = CalculateCosineSimilarity(vector1, vector2);
-                Console.WriteLine($"Cosine Similarity: {similarity}");
 
-                // Check if they are similar enough to be clustered together (using a default threshold of 0.75)
-                bool areSimilar = IsSimilarEnough(vector1, vector2);
-                Console.WriteLine($"Are Documents Similar Enough for Clustering: {areSimilar}");
+                return similarity;
             }
             catch (FileNotFoundException ex)
             {
                 Console.WriteLine($"Error: File not found. {ex.Message}");
+                return -1; // Return a negative value to indicate an error
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"An error occurred: {ex.Message}");
+                return -1; // Return a negative value to indicate an error
             }
+        }
+
+        // Function to check if two documents are similar enough for clustering
+        public static bool AreDocumentsSimilarForClustering(string filePath1, string filePath2, double threshold = 0.75)
+        {
+            double similarity = CalculateCosineSimilarityFromFiles(filePath1, filePath2);
+
+            if (similarity == -1)
+            {
+                return false; // If there's an error in reading files or calculating similarity
+            }
+
+            return similarity >= threshold;
         }
     }
 }
@@ -92,14 +104,19 @@ class Program
 {
     static void Main()
     {
-        // Ask the user for file paths
+        // Example usage: you can call this method whenever you need to calculate cosine similarity or check similarity
         Console.WriteLine("Please enter the path to the first document:");
         string filePath1 = Console.ReadLine();
 
         Console.WriteLine("Please enter the path to the second document:");
         string filePath2 = Console.ReadLine();
 
-        // Process the documents and compare them
-        CosineSimilarityValidator.ProcessDocumentsFromFilePaths(filePath1, filePath2);
+        // Calculate Cosine Similarity between the two documents
+        double similarity = CosineSimilarityValidator.CalculateCosineSimilarityFromFiles(filePath1, filePath2);
+        Console.WriteLine($"Cosine Similarity: {similarity}");
+
+        // Check if the documents are similar enough for clustering (default threshold is 0.75)
+        bool areSimilar = CosineSimilarityValidator.AreDocumentsSimilarForClustering(filePath1, filePath2);
+        Console.WriteLine($"Are Documents Similar Enough for Clustering: {areSimilar}");
     }
 }
