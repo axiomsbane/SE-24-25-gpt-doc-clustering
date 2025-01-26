@@ -11,6 +11,9 @@ public class Document
 
     // Embedding-related properties
     public float[]? Embedding { get; set; }
+    
+    
+    
     [JsonIgnore]
     public int? ClusterId { get; set; }
 

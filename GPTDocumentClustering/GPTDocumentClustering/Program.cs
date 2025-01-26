@@ -27,12 +27,13 @@ class Program
             //Generate Embeddings
             var embeddings = await embeddingService.GenerateEmbeddings(documents);
             
+            
 
         } 
         catch (Exception ex)
         {
             Console.WriteLine($"An error occurred: {ex.Message}");
-        }
+        } 
 
 
 
