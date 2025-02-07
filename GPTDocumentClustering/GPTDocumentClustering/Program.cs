@@ -12,7 +12,7 @@ namespace GPTDocumentClustering;
 
 class Program
 {
-    static async Task Main(string[] args)try karda
+    static async Task Main(string[] args)
     {
         
         //TestMethod();
