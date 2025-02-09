@@ -12,7 +12,7 @@ public class Document
     public int SerialNo { get; set; }
 
     // Embedding-related properties
-    public float[]? Embedding { get; set; }
+    public double[]? Embedding { get; set; }
     
     
     

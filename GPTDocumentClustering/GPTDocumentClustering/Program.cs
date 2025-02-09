@@ -60,7 +60,7 @@ class Program
             ++cnt;
             Console.Write($"Document Vector for {cnt} : ");
             Console.WriteLine(string.Join(", ", vector.ToArray().Select(x => x.ToString("F4"))));
-            document.Embedding = embedding.ToFloats().ToArray();
+            document.Embedding = embedding.ToFloats().ToArray().Select(x => (double)x).ToArray();
             // ll.Add(documents[i]);
             // Console.WriteLine(Regex.Replace(documents[i].Content.Trim(), @"\r\n?|\n", " "));
             // Console.WriteLine("#############################\n#########################\n######################");
