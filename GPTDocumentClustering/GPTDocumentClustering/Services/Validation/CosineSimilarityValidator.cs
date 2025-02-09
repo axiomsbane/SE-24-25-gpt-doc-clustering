@@ -102,21 +102,21 @@ namespace GPTDocumentClustering.Services.Validation
 
 class Program
 {
-    static void Main()
-    {
-        // Example usage: you can call this method whenever you need to calculate cosine similarity or check similarity
-        Console.WriteLine("Please enter the path to the first document:");
-        string filePath1 = Console.ReadLine();
+    //static void Main()
+    //{
+    //    // Example usage: you can call this method whenever you need to calculate cosine similarity or check similarity
+    //    Console.WriteLine("Please enter the path to the first document:");
+    //    string filePath1 = Console.ReadLine();
 
-        Console.WriteLine("Please enter the path to the second document:");
-        string filePath2 = Console.ReadLine();
+    //    Console.WriteLine("Please enter the path to the second document:");
+    //    string filePath2 = Console.ReadLine();
 
-        // Calculate Cosine Similarity between the two documents
-        double similarity = CosineSimilarityValidator.CalculateCosineSimilarityFromFiles(filePath1, filePath2);
-        Console.WriteLine($"Cosine Similarity: {similarity}");
+    //    // Calculate Cosine Similarity between the two documents
+    //    double similarity = CosineSimilarityValidator.CalculateCosineSimilarityFromFiles(filePath1, filePath2);
+    //    Console.WriteLine($"Cosine Similarity: {similarity}");
 
-        // Check if the documents are similar enough for clustering (default threshold is 0.75)
-        bool areSimilar = CosineSimilarityValidator.AreDocumentsSimilarForClustering(filePath1, filePath2);
-        Console.WriteLine($"Are Documents Similar Enough for Clustering: {areSimilar}");
-    }
+    //    // Check if the documents are similar enough for clustering (default threshold is 0.75)
+    //    bool areSimilar = CosineSimilarityValidator.AreDocumentsSimilarForClustering(filePath1, filePath2);
+    //    Console.WriteLine($"Are Documents Similar Enough for Clustering: {areSimilar}");
+    //}
 }
