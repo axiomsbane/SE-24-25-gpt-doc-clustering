@@ -12,6 +12,8 @@ public class EmbeddingService
         var tasks = documents.Select(async document =>
         {
             document.Embedding = await _embeddingGenerator.GenerateEmbeddings(document.Content);
+            Console.Write($"Document Vector for {document.SerialNo} : ");
+            Console.WriteLine(string.Join(", ", document.Embedding.Select(x => x.ToString("F4"))));
             return document;
         });
         

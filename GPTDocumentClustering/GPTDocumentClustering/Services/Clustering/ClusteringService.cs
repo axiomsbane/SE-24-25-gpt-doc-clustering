@@ -1,4 +1,3 @@
-using LearningFoundation;
 using LearningFoundation.Clustering.KMeans;
 
 namespace GPTDocumentClustering.Services.Clustering;

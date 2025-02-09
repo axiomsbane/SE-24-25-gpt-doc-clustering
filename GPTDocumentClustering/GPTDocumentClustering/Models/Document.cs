@@ -8,6 +8,8 @@ public class Document
     [JsonIgnore]
     public string Content { get; set; }
     public string Category { get; set; }
+    
+    public int SerialNo { get; set; }
 
     // Embedding-related properties
     public float[]? Embedding { get; set; }
