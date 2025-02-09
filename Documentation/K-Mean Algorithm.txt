@@ -19,6 +19,9 @@ Clustering:
 Description of the clustering algorithm (e.g., K-Means).
 Parameters and settings used.
 
+
+
+
 Visualize Clusters:
 Dimensionality reduction technique (e.g., t-SNE).
 Visualization tools and methods.
