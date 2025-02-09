@@ -6,19 +6,21 @@ using GPTDocumentClustering.Interfaces.InputData;
 using GPTDocumentClustering.Models;
 using GPTDocumentClustering.Services.Embedding;
 using GPTDocumentClustering.Services.InputData;
+using GPTDocumentClustering.Services.Visualization;
 using OpenAI.Embeddings;
 
 namespace GPTDocumentClustering;
 
 class Program
 {
-    static async Task Main(string[] args)try karda
+    static async Task Main(string[] args)
     {
         
-        //TestMethod();
+        // TestMethod();
+        // return;
+        
         var dataReaderService = new CsvDataReader(Environment.GetEnvironmentVariable("INPUT_FILE_PATH"));
         var embeddingService = new EmbeddingService();
-
         var visualizationService = new ClusterVisualizationService();
 
         try
@@ -55,17 +57,20 @@ class Program
         EmbeddingGenerationOptions options = new() { Dimensions = 15 };
 
         List<Document> ll = new List<Document>();
-        for (int i = 0; i < 3; i++)
+        int cnt = 0;
+        foreach (var document in documents)
         {
-            OpenAIEmbedding embedding = client.GenerateEmbedding(documents[i].Content, options);
+            OpenAIEmbedding embedding = client.GenerateEmbedding(document.Content, options);
             ReadOnlyMemory<float> vector = embedding.ToFloats();
+            ++cnt;
+            Console.Write($"Document Vector for {cnt} : ");
             Console.WriteLine(string.Join(", ", vector.ToArray().Select(x => x.ToString("F4"))));
-            documents[i].Embedding = embedding.ToFloats().ToArray();
-            ll.Add(documents[i]);
-            Console.WriteLine(Regex.Replace(documents[i].Content.Trim(), @"\r\n?|\n", " "));
-            Console.WriteLine("#############################\n#########################\n######################");
-            Console.WriteLine(documents[i].Category);
-            Console.WriteLine("#############################\n#########################\n######################");
+            document.Embedding = embedding.ToFloats().ToArray().Select(x => (double)x).ToArray();
+            // ll.Add(documents[i]);
+            // Console.WriteLine(Regex.Replace(documents[i].Content.Trim(), @"\r\n?|\n", " "));
+            // Console.WriteLine("#############################\n#########################\n######################");
+            // Console.WriteLine(documents[i].Category);
+            // Console.WriteLine("#############################\n#########################\n######################");
         }
         
         string json = JsonSerializer.Serialize(ll, new JsonSerializerOptions { WriteIndented = true });

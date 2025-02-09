@@ -31,9 +31,11 @@ public class CsvDataReader : IReadInputData
             var records = csv.GetRecords<Models.Document>();
             documents = records.ToList();
         }
-        
+
+        int cnt = 0;
         foreach (Document document in documents)
         {
+            document.SerialNo = ++cnt;
             document.Content = Regex.Replace(document.Content.Trim(), @"\r\n?|\n", " ");
         }
         return documents;
