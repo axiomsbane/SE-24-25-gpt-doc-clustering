@@ -6,6 +6,7 @@ using GPTDocumentClustering.Interfaces.InputData;
 using GPTDocumentClustering.Models;
 using GPTDocumentClustering.Services.Embedding;
 using GPTDocumentClustering.Services.InputData;
+using GPTDocumentClustering.Services.Visualization;
 using OpenAI.Embeddings;
 
 namespace GPTDocumentClustering;
@@ -20,7 +21,6 @@ class Program
         
         var dataReaderService = new CsvDataReader(Environment.GetEnvironmentVariable("INPUT_FILE_PATH"));
         var embeddingService = new EmbeddingService();
-
         var visualizationService = new ClusterVisualizationService();
 
         try
