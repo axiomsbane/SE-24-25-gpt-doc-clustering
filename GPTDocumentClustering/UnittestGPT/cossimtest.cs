@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using GPTDocumentClustering.Services.Validation;
 using System;
 using System.IO;
@@ -49,7 +50,7 @@ namespace GPTDocumentClustering.Tests
             double[] vector1 = { 1, 2, 3 };
             double[] vector2 = { 1.1, 2.2, 3.3 }; 
             bool isSimilar = CosineSimilarityValidator.IsSimilarEnough(vector1, vector2, 0.75);
-            Assert.IsTrue(isSimilar);
+            ClassicAssert.IsTrue(isSimilar);
         }
 
         [Test]
@@ -58,7 +59,7 @@ namespace GPTDocumentClustering.Tests
             double[] vector1 = { 1, 0 };
             double[] vector2 = { 0, 1 };
             bool isSimilar = CosineSimilarityValidator.IsSimilarEnough(vector1, vector2, 0.75);
-            Assert.IsFalse(isSimilar);
+            ClassicAssert.IsFalse(isSimilar);
         }
 
         [Test]
@@ -122,7 +123,7 @@ namespace GPTDocumentClustering.Tests
             File.Delete(filePath1);
             File.Delete(filePath2);
 
-            Assert.IsTrue(areSimilar);
+            ClassicAssert.IsTrue(areSimilar);
         }
 
         [Test]
@@ -138,7 +139,7 @@ namespace GPTDocumentClustering.Tests
             File.Delete(filePath1);
             File.Delete(filePath2);
 
-            Assert.IsFalse(areSimilar);
+            ClassicAssert.IsFalse(areSimilar);
         }
 
         [Test]
@@ -149,7 +150,7 @@ namespace GPTDocumentClustering.Tests
 
             bool areSimilar = CosineSimilarityValidator.AreDocumentsSimilarForClustering(filePath1, filePath2);
 
-            Assert.IsFalse(areSimilar);
+            ClassicAssert.IsFalse(areSimilar);
         }
     }
 }

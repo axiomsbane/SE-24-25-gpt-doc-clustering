@@ -1,5 +1,6 @@
 ﻿using Moq;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using GPTDocumentClustering.Services.InputData;
 using GPTDocumentClustering.Models;
 using GPTDocumentClustering.Services.Embedding;
@@ -30,9 +31,9 @@ namespace GPTDocumentClustering.Tests
             var actualDocuments = mockCsvReader.Object.ReadDocuments();
 
             // Assert
-            Assert.AreEqual(expectedDocuments.Count, actualDocuments.Count);
-            Assert.AreEqual(expectedDocuments[0].Content, actualDocuments[0].Content);
-            Assert.AreEqual(expectedDocuments[1].Category, actualDocuments[1].Category);
+            ClassicAssert.AreEqual(expectedDocuments.Count, actualDocuments.Count);
+            ClassicAssert.AreEqual(expectedDocuments[0].Content, actualDocuments[0].Content);
+            ClassicAssert.AreEqual(expectedDocuments[1].Category, actualDocuments[1].Category);
         }
 
         // Test for EmbeddingService to ensure embeddings are generated correctly
@@ -55,8 +56,8 @@ namespace GPTDocumentClustering.Tests
             var actualEmbeddings = await mockEmbeddingService.Object.GenerateEmbeddings(documents);
 
             // Assert
-            Assert.AreEqual(expectedEmbeddings.Count, actualEmbeddings.Count);
-            Assert.AreEqual(expectedEmbeddings[0], actualEmbeddings[0]);
+            ClassicAssert.AreEqual(expectedEmbeddings.Count, actualEmbeddings.Count);
+            ClassicAssert.AreEqual(expectedEmbeddings[0], actualEmbeddings[0]);
         }
 
         // Test for exception handling when an exception is thrown
@@ -70,7 +71,7 @@ namespace GPTDocumentClustering.Tests
 
             // Act & Assert
             var ex = Assert.ThrowsAsync<Exception>(async () => await Program.Main(new string[] { }));
-            Assert.AreEqual("An error occurred: Data read error", ex.Message);
+            ClassicAssert.AreEqual("An error occurred: Data read error", ex.Message);
         }
     }
 }
