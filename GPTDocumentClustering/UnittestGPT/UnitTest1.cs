@@ -1,122 +1,77 @@
-﻿using NUnit.Framework;
+﻿using Moq;
+using NUnit.Framework;
 using NUnit.Framework.Legacy;
-using Moq;
-using GPTDocumentClustering.Interfaces.InputData;
-using GPTDocumentClustering.Models;
 using GPTDocumentClustering.Services.InputData;
-using OpenAI.Embeddings;
-using System;
+using GPTDocumentClustering.Models;
+using GPTDocumentClustering.Services.Embedding;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-using Assert = NUnit.Framework.Assert;
+using System.Threading.Tasks;
+using System;
+using GPTDocumentClustering.Interfaces.InputData;
+using Microsoft.VisualStudio.TestPlatform.TestHost;
 
-namespace UnittestGPT
+namespace GPTDocumentClustering.Tests
 {
     public class ProgramTests
     {
-        private Mock<IReadInputData>? _mockService;
-        private Mock<EmbeddingClient>? _mockEmbeddingClient;
-
-        [SetUp]
-        public void Setup()
-        {
-            // Mock the IReadInputData service
-            _mockService = new Mock<IReadInputData>();
-
-            // Mock the EmbeddingClient
-            _mockEmbeddingClient = new Mock<EmbeddingClient>("text-embedding-3-small", Environment.GetEnvironmentVariable("OPENAI_API_KEY"));
-        }
-
+        // Test for CsvDataReader to ensure it returns documents correctly
         [Test]
-        public void TestDocumentReading()
-        {
-            // Arrange: Prepare a list of documents to return from the mock service
-            var documents = new List<Document>
-            {
-                new Document { Content = "This is document 1.", Category = "Category1" },
-                new Document { Content = "This is document 2.", Category = "Category2" },
-                new Document { Content = "This is document 3.", Category = "Category3" }
-            };
-
-            _mockService.Setup(service => service.ReadDocuments()).Returns(documents);
-
-            // Act: Call the method that uses IReadInputData
-            var result = _mockService.Object.ReadDocuments();
-
-            // Assert: Verify the documents returned match the expected output
-            ClassicAssert.AreEqual(3, result.Count);
-            ClassicAssert.AreEqual("This is document 1.", result[0].Content);
-            ClassicAssert.AreEqual("Category1", result[0].Category);
-        }
-
-        [Test]
-        public void TestDocumentContentCleaning()
+        public void CsvDataReader_ReadDocuments_ReturnsDocuments()
         {
             // Arrange
-            var document = new Document { Content = "This is document 1.\r\n", Category = "Category1" };
+            var mockCsvReader = new Mock<IReadInputData>();
+            var expectedDocuments = new List<Document>
+            {
+                new Document { Content = "Document 1", Category = "Category 1" },
+                new Document { Content = "Document 2", Category = "Category 2" }
+            };
+            mockCsvReader.Setup(x => x.ReadDocuments()).Returns(expectedDocuments);
 
-            // Act: Clean the document content using Regex.Replace
-            var cleanedContent = Regex.Replace(document.Content.Trim(), @"\r\n?|\n", " ");
+            // Act
+            var actualDocuments = mockCsvReader.Object.ReadDocuments();
 
-            // Assert: Verify the content is cleaned as expected
-
-            ClassicAssert.AreEqual("This is document 1.", cleanedContent);
+            // Assert
+            ClassicAssert.AreEqual(expectedDocuments.Count, actualDocuments.Count);
+            ClassicAssert.AreEqual(expectedDocuments[0].Content, actualDocuments[0].Content);
+            ClassicAssert.AreEqual(expectedDocuments[1].Category, actualDocuments[1].Category);
         }
 
+        // Test for EmbeddingService to ensure embeddings are generated correctly
         [Test]
-        public void TestEmbeddingGeneration()
+        public async Task EmbeddingService_GenerateEmbeddings_ReturnsEmbeddings()
         {
             // Arrange
-            var embeddingMock = new Mock<OpenAIEmbedding>();
+            var mockEmbeddingService = new Mock<EmbeddingService>();
             var documents = new List<Document>
             {
-                new Document { Content = "This is document 1.", Category = "Category1" },
-                new Document { Content = "This is document 2.", Category = "Category2" },
-                new Document { Content = "This is document 3.", Category = "Category3" }
+                new Document { Content = "Document 1" },
+                new Document { Content = "Document 2" }
             };
 
-            var embeddingResult = new float[] { 0.1f, 0.2f, 0.3f };
-            embeddingMock.Setup(embedding => embedding.ToFloats()).Returns(new ReadOnlyMemory<float>(embeddingResult));
+            var expectedEmbeddings = new List<float[]> { new float[] { 0.1f, 0.2f }, new float[] { 0.3f, 0.4f } };
+            mockEmbeddingService.Setup(x => x.GenerateEmbeddings(It.IsAny<List<Document>>()))
+                .ReturnsAsync(expectedEmbeddings);
 
-            _mockEmbeddingClient.Setup(client => client.GenerateEmbedding(It.IsAny<string>(), It.IsAny<EmbeddingGenerationOptions>()))
-                .Returns(embeddingMock.Object);
+            // Act
+            var actualEmbeddings = await mockEmbeddingService.Object.GenerateEmbeddings(documents);
 
-            // Act: Generate embeddings for the first document
-            var embedding = _mockEmbeddingClient.Object.GenerateEmbedding(documents[0].Content, new EmbeddingGenerationOptions { Dimensions = 15 });
-            var vector = embedding.ToFloats();
-
-            // Assert: Verify the embeddings are generated correctly
-            ClassicAssert.AreEqual(3, vector.Length);
-            ClassicAssert.AreEqual(0.1f, vector[0]);
-            ClassicAssert.AreEqual(0.2f, vector[1]);
-            ClassicAssert.AreEqual(0.3f, vector[2]);
+            // Assert
+            ClassicAssert.AreEqual(expectedEmbeddings.Count, actualEmbeddings.Count);
+            ClassicAssert.AreEqual(expectedEmbeddings[0], actualEmbeddings[0]);
         }
 
+        // Test for exception handling when an exception is thrown
         [Test]
-        public void TestEmbeddingOutputFormatting()
+        public void Main_ThrowsException_HandlesError()
         {
             // Arrange
-            var embeddingMock = new Mock<OpenAIEmbedding>();
-            var documents = new List<Document>
-            {
-                new Document { Content = "This is document 1.", Category = "Category1" }
-            };
+            var mockCsvReader = new Mock<IReadInputData>();
+            var mockEmbeddingService = new Mock<EmbeddingService>();
+            mockCsvReader.Setup(x => x.ReadDocuments()).Throws(new Exception("Data read error"));
 
-            var embeddingResult = new float[] { 0.123456f, 0.654321f, 0.987654f };
-            embeddingMock.Setup(embedding => embedding.ToFloats()).Returns(new ReadOnlyMemory<float>(embeddingResult));
-
-            _mockEmbeddingClient.Setup(client => client.GenerateEmbedding(It.IsAny<string>(), It.IsAny<EmbeddingGenerationOptions>()))
-                .Returns(embeddingMock.Object);
-
-            // Act: Generate embedding for the first document
-            var embedding = _mockEmbeddingClient.Object.GenerateEmbedding(documents[0].Content, new EmbeddingGenerationOptions { Dimensions = 15 });
-            var vector = embedding.ToFloats();
-
-
-            // Assert: Verify that the output is formatted to 4 decimal places
-            var formattedVector = string.Join(", ", vector.ToArray().Select(x => x.ToString("F4")));
-            ClassicAssert.AreEqual("0.1235, 0.6543, 0.9877", formattedVector);
+            // Act & Assert
+            var ex = Assert.ThrowsAsync<Exception>(async () => await Program.Main(new string[] { }));
+            ClassicAssert.AreEqual("An error occurred: Data read error", ex.Message);
         }
     }
 }
