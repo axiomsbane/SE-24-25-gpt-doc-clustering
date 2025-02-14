@@ -97,3 +97,21 @@ namespace GPTDocumentClustering.Services.Validation
         }
     }
 }
+
+//using System;
+//using System.Linq;
+
+//public class CosineSimilarityCalculator
+//{
+//    public static double CosineSimilarity(double[] embedding1, double[] embedding2)
+//    {
+//        if (embedding1.Length != embedding2.Length)
+//            throw new ArgumentException("Embeddings must be of the same length");
+
+//        double dotProduct = embedding1.Zip(embedding2, (a, b) => a * b).Sum();
+//        double norm1 = Math.Sqrt(embedding1.Sum(a => a * a));
+//        double norm2 = Math.Sqrt(embedding2.Sum(b => b * b));
+
+//        return (norm1 == 0 || norm2 == 0) ? 0.0 : dotProduct / (norm1 * norm2);
+//    }
+//}
