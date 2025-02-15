@@ -4,23 +4,41 @@ using System.Reflection.Metadata;
 
 namespace GPTDocumentClustering.Services.Visualization;
 
+public class Document
+{
+    public double[] Embedding { get; set; }
+}
 public class ClusterVisualizationService
 {
     public void VisualizeClusters(List<(Document Document, int ClusterIndex)> clusteredDcouments)
     {
-        //var vectors = clusteredDocuments.Select(x => Vector<double>.Build.DenseOfArray(x.Document.Embedding)).ToArray();
-        //var clusters = clusteredDocuments.Select(x => x.ClusterIndex).ToList();
+        // Convert embeddings to double[][] format for Accord.NET
+        var vectors = clusteredDocuments
+            .Select(x => x.Document.Embedding)
+            .ToArray();
 
-        //// Apply PCA - to reduced embedding in 2 Dimension
-        //var pca = new PrincipalComponentAnalysis();
-        //var reducedData = pca.Reduce(vectors, 2);
+        var clusters = clusteredDocuments
+            .Select(x => x.ClusterIndex)
+            .ToList();
 
-        //// Output coordinates
-        //Console.WriteLine("--- Reduced Document Coordinates ---");
-        //for (int i = 0; i < reducedData.RowCount; i++)
-        //{
-        //    Console.WriteLine($"Document {i}, Cluster {clusters[i]}: X = {reducedData[i, 0]:F4}, Y = {reducedData[i, 1]:F4}");
-        //}
-        //Console.WriteLine("--- End Reduced Document Coordinates ---");
+        // Apply PCA to reduce embeddings to 2 dimensions
+        var pca = new PrincipalComponentAnalysis()
+        {
+            Method = PrincipalComponentMethod.Center
+        };
+
+        // Compute the PCA
+        pca.Learn(vectors);
+
+        // Transform the data
+        double[][] reducedData = pca.Transform(vectors);
+
+        // Output coordinates
+        Console.WriteLine("--- Reduced Document Coordinates ---");
+        for (int i = 0; i < reducedData.Length; i++)
+        {
+            Console.WriteLine($"Document {i}, Cluster {clusters[i]}: X = {reducedData[i][0]:F4}, Y = {reducedData[i][1]:F4}");
+        }
+        Console.WriteLine("--- End Reduced Document Coordinates ---");
     }
 }
