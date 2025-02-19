@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using GPTDocumentClustering.Helper;
 using GPTDocumentClustering.Interfaces.InputData;
 using GPTDocumentClustering.Models;
+using GPTDocumentClustering.Services.Clustering;
 using GPTDocumentClustering.Services.Embedding;
 using GPTDocumentClustering.Services.InputData;
 using GPTDocumentClustering.Services.Visualization;
@@ -22,7 +23,7 @@ class Program
         var dataReaderService = new CsvDataReader(Environment.GetEnvironmentVariable("INPUT_FILE_PATH"));
         var embeddingService = new EmbeddingService();
         var visualizationService = new ClusterVisualizationService();
-
+        var clusteringService = new ClusteringService();
         try
         {
             // 1. Load Documents
@@ -30,7 +31,9 @@ class Program
             
             //Generate Embeddings
             var embeddings = await embeddingService.GenerateEmbeddings(documents);
-
+            
+            clusteringService.ClusterEmbeddings(embeddings);
+            
             // 5. Visualization
             Console.WriteLine("Visualization with PCA");
             

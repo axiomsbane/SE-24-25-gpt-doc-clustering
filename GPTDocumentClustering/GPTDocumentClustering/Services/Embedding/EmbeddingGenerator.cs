@@ -5,7 +5,7 @@ namespace GPTDocumentClustering.Services.Embedding;
 
 public class EmbeddingGenerator
 {
-    private EmbeddingClient _client = new("text-embedding-3-small", AppConstants.OpenAI.ApiKey);
+    private EmbeddingClient _client = new("text-embedding-3-large", AppConstants.OpenAI.ApiKey);
     private EmbeddingGenerationOptions _options = new() { Dimensions = AppConstants.OpenAI.EmbeddingLength };
 
     public Task<double[]>  GenerateEmbeddings(string text)
