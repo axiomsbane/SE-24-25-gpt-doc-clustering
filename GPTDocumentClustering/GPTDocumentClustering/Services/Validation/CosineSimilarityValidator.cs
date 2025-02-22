@@ -100,6 +100,7 @@ namespace GPTDocumentClustering.Services.Validation
 
 //using System;
 //using System.Linq;
+//using System.Collections.Generic;
 
 //public class CosineSimilarityCalculator
 //{
@@ -113,5 +114,29 @@ namespace GPTDocumentClustering.Services.Validation
 //        double norm2 = Math.Sqrt(embedding2.Sum(b => b * b));
 
 //        return (norm1 == 0 || norm2 == 0) ? 0.0 : dotProduct / (norm1 * norm2);
+//    }
+
+//    public static double[] NormalizeVector(double[] embedding)
+//    {
+//        double norm = Math.Sqrt(embedding.Sum(a => a * a));
+//        return norm == 0 ? embedding : embedding.Select(a => a / norm).ToArray();
+//    }
+
+//    public static double CosineSimilarityWithNormalization(double[] embedding1, double[] embedding2)
+//    {
+//        return CosineSimilarity(NormalizeVector(embedding1), NormalizeVector(embedding2));
+//    }
+
+//    public static double[] BatchCosineSimilarity(double[][] embeddings1, double[][] embeddings2)
+//    {
+//        if (embeddings1.Length != embeddings2.Length)
+//            throw new ArgumentException("Batch sizes must be the same");
+
+//        return embeddings1.Zip(embeddings2, (e1, e2) => CosineSimilarity(e1, e2)).ToArray();
+//    }
+
+//    public static bool IsSimilar(double[] embedding1, double[] embedding2, double threshold = 0.8)
+//    {
+//        return CosineSimilarity(embedding1, embedding2) >= threshold;
 //    }
 //}
