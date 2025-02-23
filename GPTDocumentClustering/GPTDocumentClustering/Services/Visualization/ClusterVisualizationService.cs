@@ -10,14 +10,14 @@ public class Document
 }
 public class ClusterVisualizationService
 {
-    public void VisualizeClusters(List<(Document Document, int ClusterIndex)> clusteredDcouments)
+    public void VisualizeClusters(List<(Document Document, int ClusterIndex)> document)
     {
         // Convert embeddings to double[][] format for Accord.NET
-        var vectors = clusteredDocuments
+        var vectors = document
             .Select(x => x.Document.Embedding)
             .ToArray();
 
-        var clusters = clusteredDocuments
+        var clusters = document
             .Select(x => x.ClusterIndex)
             .ToList();
 
