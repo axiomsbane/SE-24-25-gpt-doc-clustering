@@ -1,4 +1,5 @@
-﻿using GPTDocumentClustering.Models;
+﻿using Accord.Statistics.Analysis;
+using GPTDocumentClustering.Models;
 using ScottPlot;
 using System;
 using System.Collections.Generic;
@@ -97,5 +98,62 @@ namespace GPTDocumentClustering.Services
             plt.ShowLegend();
             plt.Save(outputPath, 800, 600);
         }
+
+        /// <summary>
+        /// Generate both visualizations and display cluster evaluation metrics
+        /// </summary>
+        /// <param name="outputFolder">Folder to save the visualizations</param>
+        public void AnalyzeAndVisualize(string outputFolder)
+        {
+            var points = ApplyPCA();
+            Directory.CreateDirectory(outputFolder);
+
+            // Generate visualizations
+            VisualizeDocumentClusters(points, Path.Combine(outputFolder, "clusters.png"), false);
+            VisualizeDocumentClusters(points, Path.Combine(outputFolder, "categories.png"), true);
+
+            // Generate side-by-side comparison
+            //CreateComparisonVisualization(Path.Combine(outputFolder, "comparison.png"));
+
+            // Calculate and save evaluation metrics
+            var metrics = EvaluateClusterQuality();
+            File.WriteAllText(
+                Path.Combine(outputFolder, "cluster_evaluation.txt"),
+                FormatEvaluationResults(metrics)
+            );
+        }
+
+        /// <summary>
+        /// Helper method to convert System.Drawing.Color to ScottPlot color format
+        /// </summary>
+        private System.Drawing.Color ToScottPlotColor(System.Drawing.Color color)
+        {
+            // Return the System.Drawing.Color as is since ScottPlot can use it directly
+            return color;
+        }
+
+        /// <summary>
+        /// Apply PCA to reduce document embeddings to 2D
+        /// </summary>
+        /// <returns>List of 2D points</returns>
+        private List<Tuple<double, double>> ApplyPCA()
+        {
+            //Extract embeddings as a matrix
+            double[][] embeddings = _documents
+                .Select(d => d.Embedding ?? new double[0])
+                .ToArray();
+
+            // Check if we have valid embeddings
+            if (embeddings.Length == 0 || embeddings[0].Length == 0)
+            {
+                throw new InvalidOperationException("Documents must have embeddings for visualization");
+            }
+
+            var reducedData = PrincipalComponentAnalysis.Reduce(embeddings, 2);
+            return reducedData
+                .Select(x => Tuple.Create(x[0], x[1]))
+                .ToList(); ;
+        }
+
     }
 }
