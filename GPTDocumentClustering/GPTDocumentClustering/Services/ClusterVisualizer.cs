@@ -132,6 +132,7 @@ namespace GPTDocumentClustering.Services
             return color;
         }
 
+
         /// <summary>
         /// Apply PCA to reduce document embeddings to 2D
         /// </summary>
