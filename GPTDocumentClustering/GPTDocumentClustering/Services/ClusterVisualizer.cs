@@ -315,6 +315,51 @@ namespace GPTDocumentClustering.Services
         }
         
         /// <summary>
+        /// Formats the evaluation metrics into a readable string
+        /// </summary>
+        private string FormatEvaluationResults(ClusterEvaluationMetrics metrics)
+        {
+            var result = new System.Text.StringBuilder();
+            
+            result.AppendLine("=== Document Clustering Evaluation ===");
+            result.AppendLine();
+            
+            result.AppendLine("Overall Metrics:");
+            result.AppendLine($"Average Intra-Cluster Similarity: {metrics.AverageIntraClusterSimilarity:F4}");
+            result.AppendLine($"Average Inter-Cluster Similarity: {metrics.AverageInterClusterSimilarity:F4}");
+            result.AppendLine($"Average Category Similarity: {metrics.AverageCategorySimilarity:F4}");
+            result.AppendLine();
+            
+            // Calculate silhouette coefficient (higher is better)
+            double silhouette = (metrics.AverageIntraClusterSimilarity - metrics.AverageInterClusterSimilarity) / 
+                               Math.Max(metrics.AverageIntraClusterSimilarity, metrics.AverageInterClusterSimilarity);
+            result.AppendLine($"Silhouette Coefficient: {silhouette:F4} (higher is better)");
+            result.AppendLine();
+            
+            result.AppendLine("Cluster to Category Mapping:");
+            foreach (var mapping in metrics.ClusterToOriginalMapping)
+            {
+                result.AppendLine($"Cluster {mapping.Key} -> Category '{mapping.Value}' (Purity: {metrics.ClusterPurity[mapping.Key]:P2})");
+            }
+            result.AppendLine();
+            
+            result.AppendLine("Cluster Details:");
+            foreach (var similarity in metrics.IntraClusterSimilarities)
+            {
+                result.AppendLine($"Cluster {similarity.Key} Intra-Similarity: {similarity.Value:F4}");
+            }
+            
+            result.AppendLine();
+            result.AppendLine("Category Details:");
+            foreach (var similarity in metrics.CategorySimilarities)
+            {
+                result.AppendLine($"Category {similarity.Key} Intra-Similarity: {similarity.Value:F4}");
+            }
+            
+            return result.ToString();
+        }
+        
+        /// <summary>
         /// Converts HSL values to RGB Color
         /// </summary>
         private System.Drawing.Color ColorFromHSL(float h, float s, float l)
