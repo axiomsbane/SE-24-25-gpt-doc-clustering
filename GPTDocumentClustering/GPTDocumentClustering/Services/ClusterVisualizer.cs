@@ -238,6 +238,125 @@ namespace GPTDocumentClustering.Services
         }
 
         /// <summary>
+        /// Evaluates the quality of clustering using cosine similarity
+        /// </summary>
+        public ClusterEvaluationMetrics EvaluateClusterQuality()
+        {
+            var metrics = new ClusterEvaluationMetrics();
+            
+            // Calculate intra-cluster similarity (documents within the same cluster)
+            var clusters = _documents
+                .Where(d => d.ClusterId.HasValue)
+                .GroupBy(d => d.ClusterId.Value)
+                .ToDictionary(g => g.Key, g => g.ToList());
+            
+            double totalIntraSimilarity = 0;
+            int totalIntraComparisons = 0;
+            
+            foreach (var cluster in clusters.Values)
+            {
+                double clusterSimilarity = 0;
+                int comparisons = 0;
+                
+                for (int i = 0; i < cluster.Count; i++)
+                {
+                    for (int j = i + 1; j < cluster.Count; j++)
+                    {
+                        double similarity = CosineSimilarity(cluster[i].Embedding, cluster[j].Embedding);
+                        clusterSimilarity += similarity;
+                        comparisons++;
+                    }
+                }
+                
+                if (comparisons > 0)
+                {
+                    double avgClusterSimilarity = clusterSimilarity / comparisons;
+                    metrics.IntraClusterSimilarities[clusters.Keys.ToList().IndexOf(cluster[0].ClusterId.Value)] = avgClusterSimilarity;
+                    totalIntraSimilarity += clusterSimilarity;
+                    totalIntraComparisons += comparisons;
+                }
+            }
+            
+            metrics.AverageIntraClusterSimilarity = totalIntraComparisons > 0 
+                ? totalIntraSimilarity / totalIntraComparisons 
+                : 0;
+            
+            // Calculate inter-cluster similarity (documents from different clusters)
+            double totalInterSimilarity = 0;
+            int totalInterComparisons = 0;
+            
+            var clusterKeys = clusters.Keys.ToList();
+            for (int i = 0; i < clusterKeys.Count; i++)
+            {
+                for (int j = i + 1; j < clusterKeys.Count; j++)
+                {
+                    double clusterPairSimilarity = 0;
+                    int comparisons = 0;
+                    
+                    foreach (var doc1 in clusters[clusterKeys[i]])
+                    {
+                        foreach (var doc2 in clusters[clusterKeys[j]])
+                        {
+                            double similarity = CosineSimilarity(doc1.Embedding, doc2.Embedding);
+                            clusterPairSimilarity += similarity;
+                            comparisons++;
+                        }
+                    }
+                    
+                    if (comparisons > 0)
+                    {
+                        totalInterSimilarity += clusterPairSimilarity;
+                        totalInterComparisons += comparisons;
+                    }
+                }
+            }
+            
+            metrics.AverageInterClusterSimilarity = totalInterComparisons > 0 
+                ? totalInterSimilarity / totalInterComparisons 
+                : 0;
+            
+            // Calculate categorical similarity (documents with the same original category)
+            var categories = _documents.GroupBy(d => d.Category).ToDictionary(g => g.Key, g => g.ToList());
+            
+            double totalCategorySimilarity = 0;
+            int totalCategoryComparisons = 0;
+            
+            foreach (var category in categories.Values)
+            {
+                double categorySimilarity = 0;
+                int comparisons = 0;
+                
+                for (int i = 0; i < category.Count; i++)
+                {
+                    for (int j = i + 1; j < category.Count; j++)
+                    {
+                        double similarity = CosineSimilarity(category[i].Embedding, category[j].Embedding);
+                        categorySimilarity += similarity;
+                        comparisons++;
+                    }
+                }
+                
+                if (comparisons > 0)
+                {
+                    double avgCategorySimilarity = categorySimilarity / comparisons;
+                    metrics.CategorySimilarities[categories.Keys.ToList().IndexOf(category[0].Category)] = avgCategorySimilarity;
+                    totalCategorySimilarity += categorySimilarity;
+                    totalCategoryComparisons += comparisons;
+                }
+            }
+            
+            metrics.AverageCategorySimilarity = totalCategoryComparisons > 0 
+                ? totalCategorySimilarity / totalCategoryComparisons 
+                : 0;
+            
+            // Calculate cluster purity and mapping
+            metrics.ClusterToOriginalMapping = MapClustersToOriginalCategories(clusters, categories);
+            metrics.ClusterPurity = CalculateClusterPurity(clusters, metrics.ClusterToOriginalMapping);
+            
+            return metrics;
+        }
+        
+        /// <summary>
         /// Maps clusters to their most likely original categories
         /// </summary>
         private Dictionary<int, string> MapClustersToOriginalCategories(
@@ -413,6 +532,17 @@ namespace GPTDocumentClustering.Services
         
         // Average similarity between documents with the same original category
         public double AverageCategorySimilarity { get; set; }
-        
+
+        // Similarity within each cluster
+        public Dictionary<int, double> IntraClusterSimilarities { get; } = new Dictionary<int, double>();
+
+        // Similarity within each category
+        public Dictionary<int, double> CategorySimilarities { get; } = new Dictionary<int, double>();
+
+        // Mapping from cluster IDs to original categories
+        public Dictionary<int, string> ClusterToOriginalMapping { get; set; } = new Dictionary<int, string>();
+
+        // Purity of each cluster (percentage of documents that match the dominant category)
+        public Dictionary<int, double> ClusterPurity { get; set; } = new Dictionary<int, double>();
     }
 }
