@@ -4,9 +4,11 @@ using System.Text.RegularExpressions;
 using GPTDocumentClustering.Helper;
 using GPTDocumentClustering.Interfaces.InputData;
 using GPTDocumentClustering.Models;
+using GPTDocumentClustering.Services;
 using GPTDocumentClustering.Services.Clustering;
 using GPTDocumentClustering.Services.Embedding;
 using GPTDocumentClustering.Services.InputData;
+using GPTDocumentClustering.Services.Validation;
 using GPTDocumentClustering.Services.Visualization;
 using OpenAI.Embeddings;
 
@@ -36,8 +38,12 @@ class Program
             
             // 5. Visualization
             Console.WriteLine("Visualization with PCA");
+            ClusterVisualizationService clusterVisualizer = new ClusterVisualizationService(embeddings);
+            clusterVisualizer.AnalyzeAndVisualize(Directory.GetCurrentDirectory()+"/Output");
             
-            
+            // 5. Cosine validation
+            CosineSimilarityService cosineSimilarityService = new CosineSimilarityService(embeddings);
+            cosineSimilarityService.Analyze(Directory.GetCurrentDirectory()+"/Output");
 
         } 
         catch (Exception ex)
