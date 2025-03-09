@@ -22,7 +22,7 @@ class Program
         
         var dataReaderService = new CsvDataReader(Environment.GetEnvironmentVariable("INPUT_FILE_PATH"));
         var embeddingService = new EmbeddingService();
-        var visualizationService = new ClusterVisualizationService();
+        // var visualizationService = new ClusterVisualizationService();
         var clusteringService = new ClusteringService();
         try
         {
