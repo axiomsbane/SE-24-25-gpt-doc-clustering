@@ -136,7 +136,7 @@ namespace GPTDocumentClustering.Services
         //     var subplots = plt.Subplots.GetPlot(2);
         //     
         //     // Left plot - categories
-        //     var categorizedDocs = _documents.GroupBy(d => d.Category).ToList();
+        //     var categorizedDocs = _documentsgit.GroupBy(d => d.Category).ToList();
         //     foreach (var group in categorizedDocs)
         //     {
         //         var indices = group.Select(d => _documents.IndexOf(d)).ToArray();
