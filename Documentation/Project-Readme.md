@@ -26,6 +26,14 @@ To prepare the dataset for analysis, the following preprocessing steps were appl
 
 5. **Stemming/Lemmatization**: Words were reduced to their base or root form (e.g., "running" to "run") to normalize the text and reduce redundancy.
 
+**Dataset Intake and Processing :**
+
+- **Input:**
+    *   **CSV File:**  Dataset is initially stored in a CSV file. This file should contain columns for:
+        *   Document Text (the raw content)
+        *   Document Category (the original category label)
+    *   **Data Loading & Transformation:**  The CSV file is read, and each row is transformed into a `Document` object. Crucially:
+        *   The Document Text and Category are directly populated.
 
 ## 3. Generate Embeddings
 
@@ -40,6 +48,11 @@ The K-means algorithm is an unsupervised machine learning method utilized for cl
 The visualization module generates 2D scatter plots using **PCA-reduced embeddings** to display document groupings. The `VisualizeDocumentClusters` method accepts precomputed 2D coordinates and toggles between two modes:  
 1. **Cluster View**: Colors points by algorithm-generated cluster IDs using a rotating color palette.  
 2. **Category View**: Colors points by ground-truth labels using predefined category colors.  
+
+Processing (Within `ClusterVisualizer`):
+-   `ApplyPCA()`: Reduces the `Embedding` dimensionality to 2D for plotting.
+-   `VisualizeDocumentClusters()`: Creates plots colored by `ClusterId` or `Category`.
+-   `EvaluateClusterQuality()`: Calculates metrics to assess clustering performance.
 
 The `AnalyzeAndVisualize` method orchestrates the workflow:  
 - Creates an output directory if missing  
