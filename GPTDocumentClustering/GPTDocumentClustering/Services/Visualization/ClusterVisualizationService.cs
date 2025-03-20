@@ -115,7 +115,7 @@ public class ClusterVisualizationService
                     
                     var color = _categoryColors[group.Key];
                     // Convert System.Drawing.Color to array of doubles for ScottPlot
-                    var scatter = plt.Add.Scatter(x, y);
+                    var scatter = plt.Add.ScatterPoints(x, y);
                     scatter.Label = $"Category: {group.Key}";
                     scatter.MarkerSize = 7;
                     plt.Legend = new Legend(plt);
@@ -135,7 +135,7 @@ public class ClusterVisualizationService
                     
                     var color = _clusterColors[group.Key];
                     // Convert System.Drawing.Color to ScottPlot format
-                    var scatter = plt.Add.Scatter(x, y);
+                    var scatter = plt.Add.ScatterPoints(x, y);
                     scatter.Label = $"Cluster: {group.Key}";
                     scatter.MarkerSize = 7;
                 }
