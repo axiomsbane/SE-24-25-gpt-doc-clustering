@@ -118,7 +118,7 @@ namespace GPTDocumentClustering.Services
             var metrics = EvaluateClusterQuality();
             File.WriteAllText(
                 Path.Combine(outputFolder, "cluster_evaluation.txt"),
-                FormatEvaluationResults(metrics)
+                FormatEvaluationResults(metrics) 
             );
         }
 
