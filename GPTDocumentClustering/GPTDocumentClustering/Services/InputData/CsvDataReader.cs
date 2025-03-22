@@ -23,12 +23,12 @@ public class CsvDataReader : IReadInputData
 
     public List<Document> ReadDocuments()
     {
-        List<Document> documents = new();
+        List<Document> documents;
         using (var reader = new StreamReader(_filePath))
         using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
         {
             csv.Context.RegisterClassMap<MyCsvMap>();
-            var records = csv.GetRecords<Models.Document>();
+            var records = csv.GetRecords<Document>();
             documents = records.ToList();
         }
 
