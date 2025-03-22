@@ -1,5 +1,3 @@
-
-
 using System.Diagnostics;
 using Accord.Statistics.Analysis;
 using GPTDocumentClustering.Models;
