@@ -1,7 +1,6 @@
 
 using Accord.MachineLearning;
 using GPTDocumentClustering.Models;
-using LearningFoundation.Clustering.KMeans;
 
 namespace GPTDocumentClustering.Services.Clustering;
 
