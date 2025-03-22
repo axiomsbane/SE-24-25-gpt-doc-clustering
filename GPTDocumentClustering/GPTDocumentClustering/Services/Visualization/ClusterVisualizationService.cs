@@ -1,5 +1,6 @@
 
 
+using System.Diagnostics;
 using Accord.Statistics.Analysis;
 using GPTDocumentClustering.Models;
 using ScottPlot;
@@ -23,7 +24,7 @@ public class ClusterVisualizationService
         {
             // Generate a color from HSL for better visual separation
             var hue = (float)i / clusterIds.Count;
-            _clusterColors[clusterIds[i]] = ColorFromHSL(hue, 0.75f, 0.5f);
+            _clusterColors[clusterIds[i]] = ColorFromHsl(hue, 0.75f, 0.5f);
         }
             
         // Generate colors for categories
@@ -32,13 +33,13 @@ public class ClusterVisualizationService
         for (int i = 0; i < categories.Count; i++)
         {
             var hue = (float)(i + 0.5) / categories.Count; // Offset to differentiate from cluster colors
-            _categoryColors[categories[i]] = ColorFromHSL(hue, 0.75f, 0.5f);
+            _categoryColors[categories[i]] = ColorFromHsl(hue, 0.75f, 0.5f);
         }
     }
 
     public void AnalyzeAndVisualize(string outputFolder)
     {
-        var points = ApplyPCA();
+        var points = ApplyPca();
         Directory.CreateDirectory(outputFolder);
             
         // Generate visualizations
@@ -56,7 +57,7 @@ public class ClusterVisualizationService
         // );
     }
     
-    private System.Drawing.Color ColorFromHSL(float h, float s, float l)
+    private System.Drawing.Color ColorFromHsl(float h, float s, float l)
     {
         float r, g, b;
             
@@ -69,9 +70,9 @@ public class ClusterVisualizationService
             float q = l < 0.5 ? l * (1 + s) : l + s - l * s;
             float p = 2 * l - q;
                 
-            r = HueToRGB(p, q, h + 1.0f/3);
-            g = HueToRGB(p, q, h);
-            b = HueToRGB(p, q, h - 1.0f/3);
+            r = HueToRgb(p, q, h + 1.0f/3);
+            g = HueToRgb(p, q, h);
+            b = HueToRgb(p, q, h - 1.0f/3);
         }
             
         return System.Drawing.Color.FromArgb(
@@ -81,7 +82,7 @@ public class ClusterVisualizationService
         );
     }
         
-    private float HueToRGB(float p, float q, float t)
+    private float HueToRgb(float p, float q, float t)
     {
         if (t < 0) t += 1;
         if (t > 1) t -= 1;
@@ -92,8 +93,8 @@ public class ClusterVisualizationService
             
         return p;
     }
-    
-    public void VisualizeDocumentClusters( List<Tuple<double,double>>? points, string outputPath, bool showCategories = false)
+
+    private void VisualizeDocumentClusters( List<Tuple<double,double>>? points, string outputPath, bool showCategories)
         {
             // Apply PCA to reduce dimensionality to 2D
             
@@ -109,14 +110,17 @@ public class ClusterVisualizationService
                 foreach (var group in categorizedDocs)
                 {
                     var indices = group.Select(d => _documents.IndexOf(d)).ToArray();
-                    var groupPoints = indices.Select(i => points[i]).ToArray();
+                    var groupPoints = indices.Select(i =>
+                    {
+                        Debug.Assert(points != null, nameof(points) + " != null");
+                        return points[i];
+                    }).ToArray();
                     var x = groupPoints.Select(p => p.Item1).ToArray();
                     var y = groupPoints.Select(p => p.Item2).ToArray();
                     
-                    var color = _categoryColors[group.Key];
                     // Convert System.Drawing.Color to array of doubles for ScottPlot
                     var scatter = plt.Add.ScatterPoints(x, y);
-                    scatter.Label = $"Category: {group.Key}";
+                    scatter.LegendText = $"Category: {group.Key}";
                     scatter.MarkerSize = 7;
                     plt.Legend = new Legend(plt);
                 }
@@ -129,14 +133,17 @@ public class ClusterVisualizationService
                 foreach (var group in clusteredDocs)
                 {
                     var indices = group.Select(d => _documents.IndexOf(d)).ToArray();
-                    var groupPoints = indices.Select(i => points[i]).ToArray();
+                    var groupPoints = indices.Select(i =>
+                    {
+                        Debug.Assert(points != null, nameof(points) + " != null");
+                        return points[i];
+                    }).ToArray();
                     var x = groupPoints.Select(p => p.Item1).ToArray();
                     var y = groupPoints.Select(p => p.Item2).ToArray();
                     
-                    var color = _clusterColors[group.Key];
                     // Convert System.Drawing.Color to ScottPlot format
                     var scatter = plt.Add.ScatterPoints(x, y);
-                    scatter.Label = $"Cluster: {group.Key}";
+                    scatter.LegendText = $"Cluster: {group.Key}";
                     scatter.MarkerSize = 7;
                 }
                 plt.Title("Document Visualization by Clusters");
@@ -147,11 +154,11 @@ public class ClusterVisualizationService
             plt.Save(outputPath,800, 600);
         }
     
-    private List<Tuple<double, double>> ApplyPCA()
+    private List<Tuple<double, double>> ApplyPca()
         {
             //Extract embeddings as a matrix
             double[][] embeddings = _documents
-                .Select(d => d.Embedding ?? new double[0])
+                .Select(d => d.Embedding ?? [])
                 .ToArray();
             
             // Check if we have valid embeddings
@@ -163,6 +170,6 @@ public class ClusterVisualizationService
             var reducedData = PrincipalComponentAnalysis.Reduce(embeddings, 2);
             return reducedData
                 .Select(x => Tuple.Create(x[0], x[1]))
-                .ToList();;
+                .ToList();
         }
 }
