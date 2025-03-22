@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using GPTDocumentClustering.Models;
 
 namespace GPTDocumentClustering.Services.Validation;
@@ -19,15 +20,19 @@ public class CosineSimilarityService
             FormatEvaluationResults(metrics)
         );
     }
-    
-    public ClusterEvaluationMetrics EvaluateClusterQuality()
+
+    private ClusterEvaluationMetrics EvaluateClusterQuality()
         {
             var metrics = new ClusterEvaluationMetrics();
             
             // Calculate intra-cluster similarity (documents within the same cluster)
             var clusters = _documents
                 .Where(d => d.ClusterId.HasValue)
-                .GroupBy(d => d.ClusterId.Value)
+                .GroupBy(d =>
+                {
+                    Debug.Assert(d.ClusterId != null);
+                    return d.ClusterId.Value;
+                })
                 .ToDictionary(g => g.Key, g => g.ToList());
             
             double totalIntraSimilarity = 0;
@@ -51,7 +56,10 @@ public class CosineSimilarityService
                 if (comparisons > 0)
                 {
                     double avgClusterSimilarity = clusterSimilarity / comparisons;
-                    metrics.IntraClusterSimilarities[clusters.Keys.ToList().IndexOf(cluster[0].ClusterId.Value)] = avgClusterSimilarity;
+                    var clusterId = cluster[0].ClusterId;
+                    if (clusterId != null)
+                        metrics.IntraClusterSimilarities[clusters.Keys.ToList().IndexOf(clusterId.Value)] =
+                            avgClusterSimilarity;
                     totalIntraSimilarity += clusterSimilarity;
                     totalIntraComparisons += comparisons;
                 }
@@ -130,14 +138,13 @@ public class CosineSimilarityService
                 : 0;
             
             // Calculate cluster purity and mapping
-            metrics.ClusterToOriginalMapping = MapClustersToOriginalCategories(clusters, categories);
+            metrics.ClusterToOriginalMapping = MapClustersToOriginalCategories(clusters);
             metrics.ClusterPurity = CalculateClusterPurity(clusters, metrics.ClusterToOriginalMapping);
             
             return metrics;
         }
     private Dictionary<int, string> MapClustersToOriginalCategories(
-            Dictionary<int, List<Document>> clusters,
-            Dictionary<string, List<Document>> categories)
+            Dictionary<int, List<Document>> clusters)
         {
             var mapping = new Dictionary<int, string>();
             
@@ -218,7 +225,7 @@ public class CosineSimilarityService
             
             return result.ToString();
         }
-    private double CosineSimilarity(double[] v1, double[] v2)
+    private double CosineSimilarity(double[]? v1, double[]? v2)
     {
         if (v1 == null || v2 == null || v1.Length != v2.Length)
             return 0;
