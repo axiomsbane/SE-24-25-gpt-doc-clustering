@@ -19,15 +19,17 @@ The dataset used in this project is a subset of the above text document classifi
 
 The dataset is organized in a CSV file format.
 
-**Column descriptions:**
+**Column descriptions**
 | Text | Label |
-| A sizeable muliline text document <br> of about 3000 characters.  | Possible values : 0,1,2,3 |
+| --- | --- |
+| A sizeable muliline text document <br> of about 3000 characters. | Possible values : 0,1,2,3 |
 
-**Label Mappings** : 
-| Value |Meaning  |
+**Label Mappings**
+| Value | Meaning |
+| --- | --- |
 | 0 | Politics |
 | 1 | Sport |
-| 2 |  Technology|
+| 2 | Technology |
 | 3 | Entertainment |
 
 
