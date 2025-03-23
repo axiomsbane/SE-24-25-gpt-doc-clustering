@@ -18,10 +18,13 @@ https://www.kaggle.com/datasets/sunilthite/text-document-classification-dataset
 The dataset used in this project is a subset of the above text document classification dataset. It contains **200 text documents** categorized into **four distinct classes**: politics, sport, tech and entertainment. This dataset is well-suited for tasks such as **document classification** and **document clustering**, as it provides a diverse range of textual data across multiple domains.
 
 The dataset is organized in a CSV file format.
+
 **Column descriptions:**
+
 | Text | Label |
 |--|--|
 | A sizeable muliline text document <br> of about 3000 characters.  | Possible values : 0,1,2,3 |
+
 **Label Mappings** : 
 | Value |Meaning  |
 |--|--|
