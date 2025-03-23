@@ -24,7 +24,7 @@ The dataset is organized in a CSV file format.
 | --- | --- |
 | A sizeable muliline text document <br> of about 3000 characters. | Possible values : 0,1,2,3 |
 
-<!-- Table separator -->
+The following table shows the meaning of each label value:
 
 **Label Mappings**
 | Value | Meaning |
