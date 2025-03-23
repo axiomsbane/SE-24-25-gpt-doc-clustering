@@ -52,7 +52,146 @@ public class ClusterVisualizationService
         // Generate visualizations
         VisualizeDocumentClusters(points, Path.Combine(outputFolder, "clusters.png"), false);
         VisualizeDocumentClusters(points, Path.Combine(outputFolder, "categories.png"), true);
+
+        //CompareEmbeddingsBasedOnGroup(outputFolder + "/embeddingsVisualization");
+        CreateLabeledHeatmap(Path.Combine(outputFolder, "heatmap.png"));
+    }
+
+    private void CreateLabeledHeatmap(string outputPath)
+    {
+        int embeddingCount = _documents.Count;
+        int dimensions = AppConstants.OpenAI.EmbeddingLength;
         
+        var embeddings = _documents.Select(doc => doc.Embedding).ToList();
+        var labels = _documents.Select(doc => doc.Category).ToList();
+        
+        var sortedData = labels
+            .Select((label, index) => new { Label = label, Embedding = embeddings[index] })
+            .OrderBy(item => item.Label)
+            .ToList();
+        
+        // Extract sorted embeddings and labels
+        var sortedEmbeddings = sortedData.Select(item => item.Embedding).ToList();
+        var sortedLabels = sortedData.Select(item => item.Label).ToList();
+        
+        // Create data array for heatmap
+        double[,] heatmapData = new double[embeddingCount, dimensions];
+        
+        for (int i = 0; i < embeddingCount; i++)
+        {
+            for (int j = 0; j < dimensions; j++)
+            {
+                heatmapData[i, j] = sortedEmbeddings[i][j];
+            }
+        }
+        
+        // Create the plot
+        var plt = new Plot();
+        
+        // Add heatmap
+        var hm = plt.Add.Heatmap(heatmapData);
+        plt.Add.ColorBar(hm);
+        
+        // Label customization
+        plt.Title("Embedding Vectors Heatmap by Label");
+        plt.XLabel("Dimension Index");
+        plt.YLabel("Embedding Index (Sorted by Label)");
+        
+        // Add label dividers and annotations
+        string currentLabel = sortedLabels[0];
+        int startIdx = 0;
+        
+        plt.Add.Annotation($"Label Top to Bottom:  \n{AppConstants.DataConstants.MyDictionary["3"]} " +
+                           $"\n{AppConstants.DataConstants.MyDictionary["2"]} " +
+                           $"\n{AppConstants.DataConstants.MyDictionary["1"]} " +
+                           $"\n{AppConstants.DataConstants.MyDictionary["0"]}");
+        for (int i = 1; i <= sortedLabels.Count; i++)
+        {
+            // If we've reached a new label or the end of the list, add a divider
+            if (i == sortedLabels.Count || sortedLabels[i] != currentLabel)
+            {
+                // Add a horizontal line to separate labels
+                plt.Add.HorizontalLine(i - 0.5, color : Color.FromColor(System.Drawing.Color.White));
+                
+                // Add label annotation
+                //plt.Add.Annotation($"Label {currentLabel}", Alignment.MiddleCenter);
+                // var anno = plt.Add.Annotation($"Label {currentLabel}");
+                // anno.OffsetX = dimensions / (float)2.0;
+                // anno.OffsetY = ((float)startIdx + i - 1) / (float)2.0;
+                // anno.LabelFontSize = 16;
+                // anno.LabelBackgroundColor = Color.FromColor(System.Drawing.Color.White);
+                
+                if (i < sortedLabels.Count)
+                {
+                    // Update for next label
+                    currentLabel = sortedLabels[i];
+                    startIdx = i;
+                }
+            }
+        }
+        
+        // Save the plot
+        plt.Save(outputPath, 1200, 800);
+        Console.WriteLine($"Labeled heatmap saved to {outputPath}");
+
+    }
+    
+    private void CompareEmbeddingsBasedOnGroup(string outputPath)
+    {
+        Console.WriteLine("Output path is : {0}", outputPath);
+        
+        var indices 
+            = Enumerable
+                .Range(1, AppConstants.OpenAI.EmbeddingLength)
+                .Select(idx => (double)idx).ToArray();
+        
+        var categorizedDocs = _documents.GroupBy(d => d.Category).ToList();
+        
+        Console.WriteLine($"{categorizedDocs.Count} categorized documents");
+        
+        foreach (var group in categorizedDocs)
+        {
+            // Create a plot with appropriate size
+            var plt = new Plot();
+        
+            foreach (var document in group)
+            {
+                Debug.Assert(document.Embedding != null, "document.Embedding != null");
+                var scatter = plt.Add.ScatterPoints(
+                    indices,
+                    document.Embedding);
+            }
+        
+            plt.Title($"Embeddings Visualization of Category {AppConstants.DataConstants.MyDictionary[group.Key]}");
+            plt.ShowLegend();
+            plt.Save(outputPath + $"_{group.Key}.png",1200, 800);
+        }
+        
+    }
+    
+    private void CompareEmbeddings(string outputPath)
+    {
+        // Create a plot with appropriate size
+        var plt = new Plot();
+        var indices 
+            = Enumerable
+            .Range(1, AppConstants.OpenAI.EmbeddingLength)
+            .Select(idx => (double)idx).ToArray();
+        
+        foreach (var document in _documents)
+        {
+            // Add each embedding with a different color and label
+            Debug.Assert(document.Embedding != null, "document.Embedding != null");
+            var scatter = plt.Add.ScatterPoints(
+                indices,
+                document.Embedding);
+            scatter.MarkerSize = 2;
+            scatter.LegendText = document.Category;
+        }
+        
+        plt.Title("Embeddings Visualization");
+        plt.ShowLegend();
+        plt.Save(outputPath,1200, 800);
     }
     
     private System.Drawing.Color ColorFromHsl(float h, float s, float l)
