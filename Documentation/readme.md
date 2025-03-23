@@ -107,73 +107,20 @@ This process generates the following outputs:
 
 ---
 
-  
-  
-
 
   
 
-## Dependencies
+## Setup Instructions
 
--->
+1. Clone the repository. 
+2. Open the GPTDocumentClustering project in Visual Studio or Jetbrains Rider IDE. 
+3. Add 2 environment variables in the IDE: 
+    * OPENAI_API_KEY - value needs to be API key 
+    * INPUT_FILE_PATH - value needs to be the path to input CSV file
+4. Build and run the project.
+5. The Output folder will be generated in bin/ folder.
 
-  
-
-This project relies on the following dependencies:
-
-  
-
-*  **Accord.NET:**
-
-*  `Accord.Math`
-
-*  `Accord.Statistics`
-
-*  _Install via NuGet: `dotnet add package Accord.Math` and `dotnet add package Accord.Statistics`_
-
-  
-
-*  **ScottPlot:**
-
-*  _Install via NuGet: `dotnet add package ScottPlot`_
-
-  
-
-*  **System.Drawing.Common:**
-
-*  _(Required for .NET 6+)_
-
-*  _Install via NuGet: `dotnet add package System.Drawing.Common`_
-
-  
-
-*  **GPTDocumentClustering.Models.Document:**
-
-* This is a custom class that you must define in your project. It should include properties for document text, embedding, cluster ID, and category.
-
-  
-
-*  **System (Part of .NET):**
-
-*  `System.IO`
-
-*  `System.Linq`
-
-*  `System.Collections.Generic`
-
-*  _These are core .NET libraries and do not require separate installation._
-
-  
-
----
-
-  
-
-## **Setup Instructions**
-
-  
-
-### 1. **Prerequisites**
+### 1. Prerequisites
 
   
 
