@@ -6,6 +6,10 @@ using GPTDocumentClustering.Models;
 
 namespace GPTDocumentClustering.Services.InputData;
 
+/// <summary>
+/// This class does all the reading and parsing of CSV input data
+/// in the project
+/// </summary>
 public class CsvDataReader : IReadInputData
 {
     private readonly string _filePath;
@@ -20,7 +24,11 @@ public class CsvDataReader : IReadInputData
         _filePath = filePath;
     }
     
-
+    /// <summary>
+    /// Maps the CSV columns to the parameters in Document
+    /// model class and returns a list of all the parsed documents
+    /// </summary>
+    /// <returns>document list</returns>
     public List<Document> ReadDocuments()
     {
         List<Document> documents;

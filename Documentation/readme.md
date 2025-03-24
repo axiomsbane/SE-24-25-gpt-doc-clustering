@@ -19,19 +19,18 @@ The dataset used in this project is a subset of the above text document classifi
 
 The dataset is organized in a CSV file format.
 
-**Column descriptions**
+**Column descriptions:**
+
 | Text | Label |
-| --- | --- |
-| A sizeable muliline text document <br> of about 3000 characters. | Possible values : 0,1,2,3 |
+|--|--|
+| A sizeable muliline text document <br> of about 3000 characters.  | Possible values : 0,1,2,3 |
 
-The following table shows the meaning of each label value:
-
-**Label Mappings**
-| Value | Meaning |
-| --- | --- |
+**Label Mappings** : 
+| Value |Meaning  |
+|--|--|
 | 0 | Politics |
 | 1 | Sport |
-| 2 | Technology |
+| 2 |  Technology|
 | 3 | Entertainment |
 
 
@@ -75,11 +74,23 @@ This process generates the following outputs:
 
 1.  **Visualizations (PNG Images):**
 
-*  `clusters.png`: A 2D scatter plot of documents, colored according to their assigned cluster.
-
 *  `categories.png`: A 2D scatter plot of documents, colored according to their original category.
 
-  
+![categories.png](../Outputs/3072_size_vector/categories.png)
+
+*  `clusters.png`: A 2D scatter plot of documents, colored according to their cluster assigned by the
+K-Means clustering algorithm. 
+As it can be seen, most of the points match the original groupings they belong to. But some points 
+that lie on the boundary of the original groupings are mis-classified. 
+
+![clusters.png](../Outputs/3072_size_vector/clusters.png)
+
+* `heatmap.png` : A 2D Heatmap that shows that the embeddings belonging to the same category have similar
+patterns of the scalar values in the vector. For example : For category sport, at position 100 in the vector, 
+most of the embeddings might have a high value. This can be seen by observing dark and light colored patters in 
+each of the sections of the heatmap that represent each category.
+
+![categories.png](../Outputs/heatmap.png)
 
 2.  **Evaluation Report (TXT File: `cluster_evaluation.txt`):**
 
@@ -104,77 +115,40 @@ This process generates the following outputs:
 
 ## Project Structure
 
-  
+```plaintext
+📦 Root
+ ┣ 📂 GPTDocumentClustering
+ ┃ ┣ 📂 Helper
+ ┃ ┣ 📂 Interfaces
+ ┃ ┃ ┣ 📂 Embedding
+ ┃ ┃ ┗ 📂 InputData
+ ┃ ┣ 📂 Models
+ ┃ ┗ 📂 Services
+ ┃   ┣ 📂 Clustering
+ ┃   ┣ 📂 Embedding
+ ┃   ┣ 📂 InputData
+ ┃   ┣ 📂 Validation
+ ┃   ┗ 📂 Visualization
+ ┗ 📂 UnittestGPT
+```
 
 ---
 
-  
-  
-
 
   
 
-## Dependencies
+## Setup Instructions
 
--->
+1. Clone the repository. 
+2. Open the GPTDocumentClustering project in Visual Studio or Jetbrains Rider IDE. 
+3. Add 2 environment variables in the IDE: 
+    * OPENAI_API_KEY - value needs to be API key 
+    * INPUT_FILE_PATH - value needs to be the path to input CSV file
+                        that is present in Dataset folder (dataset.csv)
+4. Build and run the project.
+5. The Output folder will be generated in bin/ folder.
 
-  
-
-This project relies on the following dependencies:
-
-  
-
-*  **Accord.NET:**
-
-*  `Accord.Math`
-
-*  `Accord.Statistics`
-
-*  _Install via NuGet: `dotnet add package Accord.Math` and `dotnet add package Accord.Statistics`_
-
-  
-
-*  **ScottPlot:**
-
-*  _Install via NuGet: `dotnet add package ScottPlot`_
-
-  
-
-*  **System.Drawing.Common:**
-
-*  _(Required for .NET 6+)_
-
-*  _Install via NuGet: `dotnet add package System.Drawing.Common`_
-
-  
-
-*  **GPTDocumentClustering.Models.Document:**
-
-* This is a custom class that you must define in your project. It should include properties for document text, embedding, cluster ID, and category.
-
-  
-
-*  **System (Part of .NET):**
-
-*  `System.IO`
-
-*  `System.Linq`
-
-*  `System.Collections.Generic`
-
-*  _These are core .NET libraries and do not require separate installation._
-
-  
-
----
-
-  
-
-## **Setup Instructions**
-
-  
-
-### 1. **Prerequisites**
+### 1. Prerequisites
 
   
 

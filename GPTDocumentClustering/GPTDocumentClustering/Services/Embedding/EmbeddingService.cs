@@ -2,6 +2,10 @@ using GPTDocumentClustering.Models;
 
 namespace GPTDocumentClustering.Services.Embedding;
 
+/// <summary>
+/// This service implements the functionality of getting embeddings
+/// for all the documents
+/// </summary>
 public class EmbeddingService
 {
     private readonly EmbeddingGenerator _embeddingGenerator = new();
