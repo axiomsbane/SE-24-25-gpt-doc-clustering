@@ -6,7 +6,7 @@ public static class AppConstants
     public static class OpenAI
     {
         public static string ApiKey { get; } = LoadEnvKey("OPENAI_API_KEY");
-        public static int EmbeddingLength { get; } = 3072;
+        public static int EmbeddingLength { get; } = 512;
     }
 
     public static class DataConstants
