@@ -76,9 +76,18 @@ This process generates the following outputs:
 
 *  `clusters.png`: A 2D scatter plot of documents, colored according to their assigned cluster.
 
+![clusters.png](../Outputs/3072_size_vector/clusters.png)
+
 *  `categories.png`: A 2D scatter plot of documents, colored according to their original category.
 
-  
+![categories.png](../Outputs/3072_size_vector/categories.png)
+
+* `heatmap.png` : A 2D Heatmap that shows that the embeddings belonging to the same category have similar
+patterns of the scalar values in the vector. For example : For category sport, at position 100 in the vector, 
+most of the embeddings might have a high value. This can be seen by observing dark and light colored patters in 
+each of the sections of the heatmap that represent each category.
+
+![categories.png](../Outputs/heatmap.png)
 
 2.  **Evaluation Report (TXT File: `cluster_evaluation.txt`):**
 
