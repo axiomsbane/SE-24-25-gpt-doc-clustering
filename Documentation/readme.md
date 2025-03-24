@@ -74,11 +74,23 @@ This process generates the following outputs:
 
 1.  **Visualizations (PNG Images):**
 
-*  `clusters.png`: A 2D scatter plot of documents, colored according to their assigned cluster.
-
 *  `categories.png`: A 2D scatter plot of documents, colored according to their original category.
 
-  
+![categories.png](../Outputs/3072_size_vector/categories.png)
+
+*  `clusters.png`: A 2D scatter plot of documents, colored according to their cluster assigned by the
+K-Means clustering algorithm. 
+As it can be seen, most of the points match the original groupings they belong to. But some points 
+that lie on the boundary of the original groupings are mis-classified. 
+
+![clusters.png](../Outputs/3072_size_vector/clusters.png)
+
+* `heatmap.png` : A 2D Heatmap that shows that the embeddings belonging to the same category have similar
+patterns of the scalar values in the vector. For example : For category sport, at position 100 in the vector, 
+most of the embeddings might have a high value. This can be seen by observing dark and light colored patters in 
+each of the sections of the heatmap that represent each category.
+
+![categories.png](../Outputs/heatmap.png)
 
 2.  **Evaluation Report (TXT File: `cluster_evaluation.txt`):**
 
@@ -117,6 +129,7 @@ This process generates the following outputs:
 3. Add 2 environment variables in the IDE: 
     * OPENAI_API_KEY - value needs to be API key 
     * INPUT_FILE_PATH - value needs to be the path to input CSV file
+                        that is present in Dataset folder (dataset.csv)
 4. Build and run the project.
 5. The Output folder will be generated in bin/ folder.
 
