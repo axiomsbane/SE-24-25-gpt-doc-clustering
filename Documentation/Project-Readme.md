@@ -4,68 +4,122 @@
 
 **Objective:** To generate embeddings for a set of documents using OpenAI's GPT, cluster the documents based on their embeddings, and visualize the clusters in a reduced-dimensional space. Additionally, calculate and verify the cosine similarity between documents within and across clusters.
 
-## 2. Data Collection and Preparation
+## 2. Data Description
+The dataset used from Kaggle :
+https://www.kaggle.com/datasets/sunilthite/text-document-classification-dataset
 
-The dataset used in this project is a text document classification dataset containing **2,225 text documents** categorized into **five distinct classes**: politics, sport, tech, entertainment, and business. This dataset is well-suited for tasks such as **document classification** and **document clustering**, as it provides a diverse range of textual data across multiple domains.
+The dataset used in this project is a subset of the above text document classification dataset. It contains **200 text documents** categorized into **four distinct classes**: politics, sport, tech and entertainment. This dataset is well-suited for tasks such as **document classification** and **document clustering**, as it provides a diverse range of textual data across multiple domains.
 
-### Data Collection Process
+The dataset is organized in a CSV file format.
 
-The dataset was collected from publicly available sources, such as news articles, blogs, and other text-based resources, ensuring a balanced representation of each category. Each document is labeled with its corresponding category, making it suitable for supervised learning tasks.
+**Column descriptions:**
 
-### Preprocessing Steps
+| Text | Label |
+|--|--|
+| A sizeable muliline text document <br> of about 3000 characters.  | Possible values : 0,1,2,3 |
 
-To prepare the dataset for analysis, the following preprocessing steps were applied:
-
-1. **Removing Special Characters**: Punctuation, symbols, and other non-alphanumeric characters were removed to reduce noise in the text data.
-
-2. **Converting to Lowercase**: All text was converted to lowercase to ensure uniformity and avoid duplication of words due to case sensitivity (e.g., "Tech" and "tech" are treated as the same word).
-
-3. **Tokenization**: The text was split into individual words or tokens to facilitate further analysis.
-
-4. **Stopword Removal**: Common stopwords (e.g., "the", "is", "and") were removed to focus on meaningful words that contribute to the classification task.
-
-5. **Stemming/Lemmatization**: Words were reduced to their base or root form (e.g., "running" to "run") to normalize the text and reduce redundancy.
-
-**Dataset Intake and Processing :**
-
-- **Input:**
-    *   **CSV File:**  Dataset is initially stored in a CSV file. This file should contain columns for:
-        *   Document Text (the raw content)
-        *   Document Category (the original category label)
-    *   **Data Loading & Transformation:**  The CSV file is read, and each row is transformed into a `Document` object. Crucially:
-        *   The Document Text and Category are directly populated.
-
-## 3. Generate Embeddings
-
-The OpenAI API was used to generate embeddings for the text documents. The API provides powerful pre-trained models like **text-embedding-ada-002**, which converts text into high-dimensional vector representations. These embeddings capture semantic meaning, making them ideal for document classification and clustering tasks. By sending text data to the API, it returns numerical vectors that can be used as input for machine learning models.
+**Label Mappings** : 
+| Value |Meaning  |
+|--|--|
+| 0 | Politics |
+| 1 | Sport |
+| 2 |  Technology|
+| 3 | Entertainment |
 
 
-## 4. Clustering
+## 3. Process & Output Description
 
-The K-means algorithm is an unsupervised machine learning method utilized for clustering data into groups based on shared characteristics. By minimizing intra-cluster variance, the algorithm iteratively assigns data points to the nearest cluster centroids and recalculates the centroids until it reaches convergence or a predefined number of iterations. In this project, the K-means algorithm was applied to cluster documents according to their respective categories, providing an efficient solution for organizing data.
+ 1. **Load CSV Data**
+ 2. **Generation of Embeddings**
+ 3. **Run K-Means Algorithm**
+ 4. **Visualization Process with PCA**
+ 5. **Cosine Similarity calculations**
+ 6. **Output Description**
 
-## 5. Visualization Implementation**  
-The visualization module generates 2D scatter plots using **PCA-reduced embeddings** to display document groupings. The `VisualizeDocumentClusters` method accepts precomputed 2D coordinates and toggles between two modes:  
-1. **Cluster View**: Colors points by algorithm-generated cluster IDs using a rotating color palette.  
-2. **Category View**: Colors points by ground-truth labels using predefined category colors.  
+  
 
-Processing (Within `ClusterVisualizer`):
--   `ApplyPCA()`: Reduces the `Embedding` dimensionality to 2D for plotting.
--   `VisualizeDocumentClusters()`: Creates plots colored by `ClusterId` or `Category`.
--   `EvaluateClusterQuality()`: Calculates metrics to assess clustering performance.
+#### 1. Load CSV Data
+Loading of CSV data file and mapping the columns to parameters in the `Document` model class using `CsvHelper` library. Each row of the CSSV file corresponds to one object of `Document` class. 
+ `Text` column gets mapped to `Content` parameter and `Label` column to `Category` column.
+  
+#### 2. Generation of Embeddings
+`OpenAI` library used to call the OpenAI endpoints for generating embeddings. The model used is `text-embedding-3-large`.
 
-The `AnalyzeAndVisualize` method orchestrates the workflow:  
-- Creates an output directory if missing  
-- Generates two PNG images (`clusters.png`, `categories.png`)  
-- Saves cluster evaluation metrics to a text file  
+#### 3. Run K-Means Algorithm
+The library used for K-Means algorithm is `Accord.MachineLearning`. After the clustering algorithm is run, each `Document` is assigned a "cluster ID" and it is set in the parameter `ClusterId` .
 
-**Key Implementation Details**:  
-- Uses ScottPlot library for rendering
+#### 4. PCA & Visualization Process 
+To visulizalize the high dimensional vectors, PCA is applied to the embedding vectors to get to 2D vectors. Library used is `ScottPlot`
+Three graphs are generated : 
+
+ 1. Vector Space visualization
+ 2. Original/True clusters according to labels 
+ 3. Clusters assigned by K-Means algorithm
+
+#### 5. Cosine Similarity Results 
+A text file is generated with various parameters such as Cluster purity, Intra-Cluster cosine similarity, Inter-Cluster Cosine similarity. Further clarifications in the Output explanations. 
+
+#### 5. Output explanations
+
+This process generates the following outputs:
+
+  
+
+1.  **Visualizations (PNG Images):**
+
+*  `categories.png`: A 2D scatter plot of documents, colored according to their original category.
+
+![categories.png](../Outputs/3072_size_vector/categories.png)
+
+*  `clusters.png`: A 2D scatter plot of documents, colored according to their cluster assigned by the
+K-Means clustering algorithm. 
+As it can be seen, most of the points match the original groupings they belong to. But some points 
+that lie on the boundary of the original groupings are mis-classified. 
+
+![clusters.png](../Outputs/3072_size_vector/clusters.png)
+
+* `heatmap.png` : A 2D Heatmap that shows that the embeddings belonging to the same category have similar
+patterns of the scalar values in the vector. For example : For category sport, at position 100 in the vector, 
+most of the embeddings might have a high value. This can be seen by observing dark and light colored patters in 
+each of the sections of the heatmap that represent each category.
+
+![categories.png](../Outputs/heatmap.png)
+
+2.  **Evaluation Report (TXT File: `cluster_evaluation.txt`):**
+
+* A text file containing quantitative metrics for assessing the clustering quality. Key metrics include:
+
+* Average Intra-Cluster Similarity
+
+* Average Inter-Cluster Similarity
+
+* Cluster-to-Category Mapping and Purity
+
+* Individual Cluster and Category Similarity Scores
+
+* Silhouette Coefficient
 
 ---
 
-## **Project Structure**
+## Project Structure
 
+```plaintext
+📦 Root
+ ┣ 📂 GPTDocumentClustering         # Core application implementation
+ ┃ ┣ 📂 Helper                     # Reusable utilities (file I/O, extensions)
+ ┃ ┣ 📂 Interfaces                 # Abstraction contracts for components
+ ┃ ┃ ┣ 📂 Embedding               # Text vectorization interfaces
+ ┃ ┃ ┗ 📂 InputData               # Data input 
+ ┃ ┣ 📂 Models                    # Data transfer objects (DTOs) and entities
+ ┃ ┗ 📂 Services                  # Domain-specific business logic
+ ┃   ┣ 📂 Clustering             # Cluster algorithms (e.g., K-Means)
+ ┃   ┣ 📂 Embedding              # Text embedding implementations
+ ┃   ┣ 📂 InputData              # Data loading/preprocessing
+ ┃   ┣ 📂 Validation             # Metrics & evaluation logic
+ ┃   ┗ 📂 Visualization          # Plot generation & result rendering
+ ┗ 📂 UnittestGPT                 # Unit/integration test suite
+     
+```
 
 ---
 
@@ -106,42 +160,19 @@ This project relies on the following dependencies:
     *   `System.Collections.Generic`
     *   _These are core .NET libraries and do not require separate installation._
 
----
 
-## **Setup Instructions**
+## Setup Instructions
 
-### 1. **Prerequisites**
+1. Clone the repository. 
+2. Open the GPTDocumentClustering project in Visual Studio or Jetbrains Rider IDE. 
+3. Add 2 environment variables in the IDE: 
+    * OPENAI_API_KEY - value needs to be API key 
+    * INPUT_FILE_PATH - value needs to be the path to input CSV file
+                        that is present in Dataset folder (dataset.csv)
+4. Build and run the project.
+5. The Output folder will be generated in bin/ folder.
+
+### Prerequisites
 
 - **Programming Language**: .NET Core
 - **Dependencies**: Install required NuGet packages
-
----
-
-## **Usage Instructions**
-
-
----
-
-### Sample Output Files  
-
-This process generates the following outputs:
-
-1.  **Visualizations (PNG Images):**
-    *   `clusters.png`:  A 2D scatter plot of documents, colored according to their assigned cluster.
-    *   `categories.png`: A 2D scatter plot of documents, colored according to their original category.
-
-2.  **Evaluation Report (TXT File: `cluster_evaluation.txt`):**
-    *   A text file containing quantitative metrics for assessing the clustering quality. Key metrics include:
-        *   Average Intra-Cluster Similarity
-        *   Average Inter-Cluster Similarity
-        *   Cluster-to-Category Mapping and Purity
-        *   Individual Cluster and Category Similarity Scores
-        *   Silhouette Coefficient
-
----
-
-## **Team Members**
-
--  Aditya Shidhaye
--  Aditya Ramesh
--  Pradeep Patwa
