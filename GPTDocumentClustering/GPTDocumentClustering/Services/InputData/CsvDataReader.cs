@@ -16,6 +16,7 @@ public class CsvDataReader : IReadInputData
     
     public CsvDataReader(string filePath)
     {
+        // Validate input file path before processing
         if (string.IsNullOrWhiteSpace(filePath))
         {
             throw new ArgumentException("File path cannot be null or empty.", nameof(filePath));
@@ -44,6 +45,8 @@ public class CsvDataReader : IReadInputData
         foreach (Document document in documents)
         {
             document.SerialNo = ++cnt;
+
+            // Ensures consistent text format for further processing
             document.Content = Regex.Replace(document.Content.Trim(), @"\r\n?|\n", " ");
         }
         return documents;
