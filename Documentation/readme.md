@@ -129,6 +129,7 @@ each of the sections of the heatmap that represent each category.
 3. Add 2 environment variables in the IDE: 
     * OPENAI_API_KEY - value needs to be API key 
     * INPUT_FILE_PATH - value needs to be the path to input CSV file
+                        that is present in Dataset folder (dataset.csv)
 4. Build and run the project.
 5. The Output folder will be generated in bin/ folder.
 
