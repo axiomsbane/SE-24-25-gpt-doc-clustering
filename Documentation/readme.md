@@ -115,6 +115,7 @@ each of the sections of the heatmap that represent each category.
 
 ## Project Structure
 
+```plaintext
 📦 Root
  ┣ 📂 GPTDocumentClustering
  ┃ ┣ 📂 Helper
@@ -129,6 +130,7 @@ each of the sections of the heatmap that represent each category.
  ┃   ┣ 📂 Validation
  ┃   ┗ 📂 Visualization
  ┗ 📂 UnittestGPT
+```
 
 ---
 
