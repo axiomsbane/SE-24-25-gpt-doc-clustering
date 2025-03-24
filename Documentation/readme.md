@@ -1,15 +1,8 @@
-
 ## 1. Project Overview
-
-  
 
 **Title:** Clustering Documents and Visualization of Embedding Vector Space
 
-  
-
 **Objective:** To generate embeddings for a set of documents using OpenAI's GPT, cluster the documents based on their embeddings, and visualize the clusters in a reduced-dimensional space. Additionally, calculate and verify the cosine similarity between documents within and across clusters.
-
-  
 
 ## 2. Data Description
 The dataset used from Kaggle :
@@ -106,36 +99,67 @@ each of the sections of the heatmap that represent each category.
 
 * Silhouette Coefficient
 
-
-  
-
 ---
-
-  
 
 ## Project Structure
 
 ```plaintext
 📦 Root
- ┣ 📂 GPTDocumentClustering
- ┃ ┣ 📂 Helper
- ┃ ┣ 📂 Interfaces
- ┃ ┃ ┣ 📂 Embedding
- ┃ ┃ ┗ 📂 InputData
- ┃ ┣ 📂 Models
- ┃ ┗ 📂 Services
- ┃   ┣ 📂 Clustering
- ┃   ┣ 📂 Embedding
- ┃   ┣ 📂 InputData
- ┃   ┣ 📂 Validation
- ┃   ┗ 📂 Visualization
- ┗ 📂 UnittestGPT
+ ┣ 📂 GPTDocumentClustering         # Core application implementation
+ ┃ ┣ 📂 Helper                     # Reusable utilities (file I/O, extensions)
+ ┃ ┣ 📂 Interfaces                 # Abstraction contracts for components
+ ┃ ┃ ┣ 📂 Embedding               # Text vectorization interfaces
+ ┃ ┃ ┗ 📂 InputData               # Data input 
+ ┃ ┣ 📂 Models                    # Data transfer objects (DTOs) and entities
+ ┃ ┗ 📂 Services                  # Domain-specific business logic
+ ┃   ┣ 📂 Clustering             # Cluster algorithms (e.g., K-Means)
+ ┃   ┣ 📂 Embedding              # Text embedding implementations
+ ┃   ┣ 📂 InputData              # Data loading/preprocessing
+ ┃   ┣ 📂 Validation             # Metrics & evaluation logic
+ ┃   ┗ 📂 Visualization          # Plot generation & result rendering
+ ┗ 📂 UnittestGPT                 # Unit/integration test suite
+     
 ```
 
 ---
 
 
-  
+## **Dependencies**
+<!-- 
+### **For Dataset**
+
+
+### **For Embedding:**
+
+
+### **For visualization and Cosine Similarity:**
+
+## Dependencies
+-->
+
+This project relies on the following dependencies:
+
+*   **Accord.NET:**
+    *   `Accord.Math`
+    *   `Accord.Statistics`
+    *   _Install via NuGet: `dotnet add package Accord.Math` and `dotnet add package Accord.Statistics`_
+
+*   **ScottPlot:**
+    *   _Install via NuGet: `dotnet add package ScottPlot`_
+
+*   **System.Drawing.Common:**
+    *   _(Required for .NET 6+)_
+    *   _Install via NuGet: `dotnet add package System.Drawing.Common`_
+
+*   **GPTDocumentClustering.Models.Document:**
+    *   This is a custom class that you must define in your project. It should include properties for document text, embedding, cluster ID, and category.
+
+*   **System (Part of .NET):**
+    *   `System.IO`
+    *   `System.Linq`
+    *   `System.Collections.Generic`
+    *   _These are core .NET libraries and do not require separate installation._
+
 
 ## Setup Instructions
 
@@ -148,16 +172,7 @@ each of the sections of the heatmap that represent each category.
 4. Build and run the project.
 5. The Output folder will be generated in bin/ folder.
 
-### 1. Prerequisites
+### Prerequisites
 
-  
-
--  **Programming Language**: .NET Core
-
--  **Dependencies**: Install required NuGet packages
-
-  
-
-  
-
-
+- **Programming Language**: .NET Core
+- **Dependencies**: Install required NuGet packages

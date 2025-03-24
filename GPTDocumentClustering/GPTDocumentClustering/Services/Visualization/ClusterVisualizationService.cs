@@ -6,6 +6,10 @@ using ScottPlot;
 
 namespace GPTDocumentClustering.Services.Visualization;
 
+/// <summary>
+/// Provides visualization services for document clusters
+/// Responsible for creating visual representations of document embeddings and clusters
+/// </summary>
 public class ClusterVisualizationService
 {
     private readonly List<Document> _documents;
@@ -13,6 +17,11 @@ public class ClusterVisualizationService
     private readonly Dictionary<string, System.Drawing.Color> _categoryColors;
     private Dictionary<int, String> ClusterToCategoryMap { get; }
 
+
+    /// <summary>
+    /// Constructor for ClusterVisualizationService
+    /// Initializes color mappings and cluster-to-category mapping
+    /// </summary>
     public ClusterVisualizationService(List<Document> documents)
     {
         _documents = documents;
@@ -46,7 +55,7 @@ public class ClusterVisualizationService
 
     public void AnalyzeAndVisualize(string outputFolder)
     {
-        var points = ApplyPca();
+        var points = ApplyPca();    // Dimensionality reduction
         Directory.CreateDirectory(outputFolder);
             
         // Generate visualizations
@@ -57,6 +66,8 @@ public class ClusterVisualizationService
         CreateLabeledHeatmap(Path.Combine(outputFolder, "heatmap.png"));
     }
 
+
+    // Creates a heatmap visualization of embedding vectors
     private void CreateLabeledHeatmap(string outputPath)
     {
         int embeddingCount = _documents.Count;
@@ -64,7 +75,8 @@ public class ClusterVisualizationService
         
         var embeddings = _documents.Select(doc => doc.Embedding).ToList();
         var labels = _documents.Select(doc => doc.Category).ToList();
-        
+
+        // Sort embeddings by their category
         var sortedData = labels
             .Select((label, index) => new { Label = label, Embedding = embeddings[index] })
             .OrderBy(item => item.Label)
@@ -193,7 +205,12 @@ public class ClusterVisualizationService
         plt.ShowLegend();
         plt.Save(outputPath,1200, 800);
     }
-    
+
+
+    /// <summary>
+    /// Create a color from HSL (Hue, Saturation, Lightness) color space
+    /// Provides more visually distinct colors compared to RGB
+    /// </summary>
     private System.Drawing.Color ColorFromHsl(float h, float s, float l)
     {
         float r, g, b;
