@@ -11,6 +11,7 @@ public class EmbeddingGenerator
     public Task<double[]>  GenerateEmbeddings(string text)
     {
         OpenAIEmbedding embedding = _client.GenerateEmbedding(text, _options);
+        Console.WriteLine(embedding.ToString());
         return Task.FromResult(embedding.ToFloats().ToArray().Select(x => (double)x).ToArray());
     }
 }

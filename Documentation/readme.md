@@ -115,7 +115,20 @@ each of the sections of the heatmap that represent each category.
 
 ## Project Structure
 
-  
+📦 Root
+ ┣ 📂 GPTDocumentClustering
+ ┃ ┣ 📂 Helper
+ ┃ ┣ 📂 Interfaces
+ ┃ ┃ ┣ 📂 Embedding
+ ┃ ┃ ┗ 📂 InputData
+ ┃ ┣ 📂 Models
+ ┃ ┗ 📂 Services
+ ┃   ┣ 📂 Clustering
+ ┃   ┣ 📂 Embedding
+ ┃   ┣ 📂 InputData
+ ┃   ┣ 📂 Validation
+ ┃   ┗ 📂 Visualization
+ ┗ 📂 UnittestGPT
 
 ---
 
