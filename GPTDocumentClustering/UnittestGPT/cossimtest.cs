@@ -40,10 +40,69 @@ namespace GPTDocumentClustering.Tests
             double[] vec2 = { 0, 1 };
 
             // Act
-            double result = service.CosineSimilarityService(vec1, vec2);
+            double result = service.CosineSimilarity(vec1, vec2);
 
             // Assert
             Assert.That(result, Is.EqualTo(0).Within(1e-5));
         }
     }
 }
+
+//using System.Collections.Generic;
+//using GPTDocumentClustering.Models;
+//using GPTDocumentClustering.Services.Validation;
+//using NUnit.Framework;
+
+//namespace GPTDocumentClustering.Tests
+//{
+//    [TestFixture]
+//    public class CosineSimilarityServiceTests
+//    {
+//        private CosineSimilarityService _service;
+
+//        [SetUp]
+//        public void SetUp()
+//        {
+//            _service = new CosineSimilarityService(new List<Document>());
+//        }
+
+//        [Test]
+//        public void CosineSimilarity_ShouldReturnOne_ForIdenticalVectors()
+//        {
+//            // Arrange
+//            double[] vec1 = { 1, 1, 1 };
+//            double[] vec2 = { 1, 1, 1 };
+
+//            // Act
+//            double result = _service.CosineSimilarity(vec1, vec2);
+
+//            // Assert
+//            Assert.That(result, Is.EqualTo(1).Within(1e-5));
+//        }
+
+//        [Test]
+//        public void CosineSimilarity_ShouldReturnZero_ForOrthogonalVectors()
+//        {
+//            // Arrange
+//            double[] vec1 = { 1, 0 };
+//            double[] vec2 = { 0, 1 };
+
+//            // Act
+//            double result = _service.CosineSimilarity(vec1, vec2);
+
+//            // Assert
+//            Assert.That(result, Is.EqualTo(0).Within(1e-5));
+//        }
+
+//        [Test]
+//        public void CosineSimilarity_ShouldThrowException_ForZeroVector()
+//        {
+//            // Arrange
+//            double[] vec1 = { 0, 0, 0 };
+//            double[] vec2 = { 1, 1, 1 };
+
+//            // Act & Assert
+//            Assert.Throws<System.DivideByZeroException>(() => _service.CosineSimilarity(vec1, vec2));
+//        }
+//    }
+//}
