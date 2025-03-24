@@ -3,7 +3,10 @@ using Accord.MachineLearning;
 using GPTDocumentClustering.Models;
 
 namespace GPTDocumentClustering.Services.Clustering;
-
+/// <summary>
+/// This class is for running the clustering algorithm on the document
+/// embeddings and assigning clusterIDs to each Document
+/// </summary>
 public class ClusteringService
 {
     public void ClusterEmbeddings(List<Document> documents)
