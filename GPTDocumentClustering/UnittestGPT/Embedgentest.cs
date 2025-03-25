@@ -55,6 +55,7 @@
 using GPTDocumentClustering.Services.Embedding;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
+using System.Linq;
 
 [TestFixture]
 public class EmbeddingGeneratorTests
@@ -68,9 +69,9 @@ public class EmbeddingGeneratorTests
     }
 
     [Test]
-    public void GenerateEmbeddings_ShouldReturnValidEmbedding()
+    public async Task GenerateEmbeddings_ShouldReturnValidEmbedding()
     {
-        var result = _generator.GenerateEmbeddings("test");
+        var result = await _generator.GenerateEmbeddings("test");
 
         
        ClassicAssert.NotNull(result, "Embedding should not be null.");
