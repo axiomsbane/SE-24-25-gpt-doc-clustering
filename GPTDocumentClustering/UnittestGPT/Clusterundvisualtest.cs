@@ -3,6 +3,7 @@ using System.Linq;
 using GPTDocumentClustering.Models;
 using GPTDocumentClustering.Services.Visualization;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace GPTDocumentClustering.Tests
 {
@@ -10,7 +11,7 @@ namespace GPTDocumentClustering.Tests
     public class ClusterVisualizationServiceTests
     {
         [Test]
-        public void ApplyPCA_ShouldReduceDimensions()
+        public async Task ApplyPCA_ShouldReduceDimensions()
         {
             // Arrange
             var documents = new List<Document>
@@ -22,10 +23,10 @@ namespace GPTDocumentClustering.Tests
             var service = new ClusterVisualizationService(documents);
 
             // Act
-            var reducedPoints = service.ApplyPCA();
+            var reducedPoints = await service.ApplyPCA();
 
             // Assert
-            Assert.That(reducedPoints.Count, Is.EqualTo(2));
+            ClassicAssert.That(reducedPoints, Is.EqualTo(2));
             Assert.That(reducedPoints.All(p => p.Item1 is double), Is.True);
             Assert.That(reducedPoints.All(p => p.Item2 is double), Is.True);
         }
