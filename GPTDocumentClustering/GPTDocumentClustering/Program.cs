@@ -18,36 +18,54 @@ class Program
 {
     static async Task Main(string[] args)
     {
-        
+
         // TestMethod();
         // return;
-        
+
+        // Initialize services for different stages of document processing
+        // 1. Data Reader: Reads documents from a CSV file
         var dataReaderService = new CsvDataReader(Environment.GetEnvironmentVariable("INPUT_FILE_PATH"));
+
+        // 2. Embedding Service: Converts text documents to numerical vectors
         var embeddingService = new EmbeddingService();
+
+
         // var visualizationService = new ClusterVisualizationService();
+
+        // 3. Clustering Service: Groups similar documents together
         var clusteringService = new ClusteringService();
         try
         {
-            // 1. Load Documents
+            // Step 1: Load Documents from the specified data source
             var documents =  dataReaderService.ReadDocuments();
-            
-            //Generate Embeddings
+
+
+            // Step 2: Generate Embeddings for each document
+            // Converts text to numerical vectors that represent semantic meaning
             var embeddings = await embeddingService.GenerateEmbeddings(documents);
-            
+
+
+            // Step 3: Perform Clustering on the generated embeddings
+            // Groups documents with similar semantic content
             clusteringService.ClusterEmbeddings(embeddings);
-            
-            // 5. Visualization
+
+
+            // Step 4: Visualize Clusters using PCA (Principal Component Analysis)
+            // Reduces high-dimensional embedding data to 2D/3D for visualization
             Console.WriteLine("Visualization with PCA");
             ClusterVisualizationService clusterVisualizer = new ClusterVisualizationService(embeddings);
             clusterVisualizer.AnalyzeAndVisualize(Directory.GetCurrentDirectory()+"/Output");
-            
-            // 5. Cosine validation
+
+
+            // Step 5: Validate Clusters using Cosine Similarity
+            // Measures the similarity between documents within and across clusters
             CosineSimilarityService cosineSimilarityService = new CosineSimilarityService(embeddings);
             cosineSimilarityService.Analyze(Directory.GetCurrentDirectory()+"/Output");
 
         } 
         catch (Exception ex)
         {
+            // Catch and log any errors that occur during the processing
             Console.WriteLine($"An error occurred: {ex.Message}");
         } 
 
@@ -57,24 +75,38 @@ class Program
 
     static void TestMethod()
     {
+        // 1. Read input data using CSV data reader
         IReadInputData service = new CsvDataReader(AppConstants.DataConstants.InputDataFilePath);
-        
+
+        // Load documents from the data source
         List<Document> documents = service.ReadDocuments();
         Console.WriteLine("Document Count: " + documents.Count);
-        
+
+
+        // 2. Initialize OpenAI Embedding Client
+        // Using text-embedding-3-small model with 15 dimensions
         EmbeddingClient client = new("text-embedding-3-small", Environment.GetEnvironmentVariable("OPENAI_API_KEY"));
         EmbeddingGenerationOptions options = new() { Dimensions = 15 };
 
+
+        // 3. Generate and process embeddings for each document
         List<Document> ll = new List<Document>();
         int cnt = 0;
         foreach (var document in documents)
         {
+            // Generate embedding for the document
             OpenAIEmbedding embedding = client.GenerateEmbedding(document.Content, options);
             ReadOnlyMemory<float> vector = embedding.ToFloats();
+
+            // Increment and display document counter
             ++cnt;
             Console.Write($"Document Vector for {cnt} : ");
             Console.WriteLine(string.Join(", ", vector.ToArray().Select(x => x.ToString("F4"))));
+
+            // Convert embedding to double array and attach to document
             document.Embedding = embedding.ToFloats().ToArray().Select(x => (double)x).ToArray();
+
+
             // ll.Add(documents[i]);
             // Console.WriteLine(Regex.Replace(documents[i].Content.Trim(), @"\r\n?|\n", " "));
             // Console.WriteLine("#############################\n#########################\n######################");

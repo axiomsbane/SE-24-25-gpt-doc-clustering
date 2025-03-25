@@ -1,7 +1,9 @@
+using System.Diagnostics;
 using GPTDocumentClustering.Models;
 
 namespace GPTDocumentClustering.Services.Validation;
 
+// Service for evaluating the quality of document clustering using various similarity metrics
 public class CosineSimilarityService
 {
     private readonly List<Document> _documents;
@@ -11,6 +13,8 @@ public class CosineSimilarityService
         _documents = documents;
     }
 
+
+    // Analyzes the document clusters and writes evaluation results to a file
     public void Analyze(string outputFolder)
     {
         var metrics = EvaluateClusterQuality();
@@ -19,15 +23,21 @@ public class CosineSimilarityService
             FormatEvaluationResults(metrics)
         );
     }
-    
-    public ClusterEvaluationMetrics EvaluateClusterQuality()
+
+
+    // Performs comprehensive evaluation of document clustering quality
+    private ClusterEvaluationMetrics EvaluateClusterQuality()
         {
             var metrics = new ClusterEvaluationMetrics();
             
             // Calculate intra-cluster similarity (documents within the same cluster)
             var clusters = _documents
                 .Where(d => d.ClusterId.HasValue)
-                .GroupBy(d => d.ClusterId.Value)
+                .GroupBy(d =>
+                {
+                    Debug.Assert(d.ClusterId != null);
+                    return d.ClusterId.Value;
+                })
                 .ToDictionary(g => g.Key, g => g.ToList());
             
             double totalIntraSimilarity = 0;
@@ -51,7 +61,10 @@ public class CosineSimilarityService
                 if (comparisons > 0)
                 {
                     double avgClusterSimilarity = clusterSimilarity / comparisons;
-                    metrics.IntraClusterSimilarities[clusters.Keys.ToList().IndexOf(cluster[0].ClusterId.Value)] = avgClusterSimilarity;
+                    var clusterId = cluster[0].ClusterId;
+                    if (clusterId != null)
+                        metrics.IntraClusterSimilarities[clusters.Keys.ToList().IndexOf(clusterId.Value)] =
+                            avgClusterSimilarity;
                     totalIntraSimilarity += clusterSimilarity;
                     totalIntraComparisons += comparisons;
                 }
@@ -106,6 +119,8 @@ public class CosineSimilarityService
                 double categorySimilarity = 0;
                 int comparisons = 0;
                 
+
+                // Compare documents within the same category
                 for (int i = 0; i < category.Count; i++)
                 {
                     for (int j = i + 1; j < category.Count; j++)
@@ -130,14 +145,16 @@ public class CosineSimilarityService
                 : 0;
             
             // Calculate cluster purity and mapping
-            metrics.ClusterToOriginalMapping = MapClustersToOriginalCategories(clusters, categories);
+            metrics.ClusterToOriginalMapping = MapClustersToOriginalCategories(clusters);
             metrics.ClusterPurity = CalculateClusterPurity(clusters, metrics.ClusterToOriginalMapping);
             
             return metrics;
         }
+
+
+    // Maps each cluster to its most dominant original category
     private Dictionary<int, string> MapClustersToOriginalCategories(
-            Dictionary<int, List<Document>> clusters,
-            Dictionary<string, List<Document>> categories)
+            Dictionary<int, List<Document>> clusters)
         {
             var mapping = new Dictionary<int, string>();
             
@@ -157,6 +174,9 @@ public class CosineSimilarityService
             
             return mapping;
         }
+
+
+    // Calculates the purity of each cluster based on its dominant category
     private Dictionary<int, double> CalculateClusterPurity(
         Dictionary<int, List<Document>> clusters,
         Dictionary<int, string> mapping)
@@ -176,7 +196,9 @@ public class CosineSimilarityService
             
         return purity;
     }
-    
+
+
+    // Formats the evaluation results into a human-readable string
     private string FormatEvaluationResults(ClusterEvaluationMetrics metrics)
         {
             var result = new System.Text.StringBuilder();
@@ -218,7 +240,10 @@ public class CosineSimilarityService
             
             return result.ToString();
         }
-    private double CosineSimilarity(double[] v1, double[] v2)
+
+
+    // Calculates the cosine similarity between two vectors
+    private double CosineSimilarity(double[]? v1, double[]? v2)
     {
         if (v1 == null || v2 == null || v1.Length != v2.Length)
             return 0;
@@ -239,7 +264,9 @@ public class CosineSimilarityService
             
         if (magnitude1 == 0 || magnitude2 == 0)
             return 0;
-            
+
+
+        // Calculate and return cosine similarity
         return dotProduct / (magnitude1 * magnitude2);
     }
 }
