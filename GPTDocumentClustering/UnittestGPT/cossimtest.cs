@@ -1,156 +1,167 @@
-﻿using NUnit.Framework;
-using NUnit.Framework.Legacy;
+﻿using System.Collections.Generic;
+using GPTDocumentClustering.Models;
 using GPTDocumentClustering.Services.Validation;
-using System;
-using System.IO;
+using NUnit.Framework;
+using static GPTDocumentClustering.Services.Validation.CosineSimilarityService;
 
 namespace GPTDocumentClustering.Tests
 {
     [TestFixture]
-    public class CosineSimilarityValidatorTests
+    public class CosineSimilarityServiceTests
     {
         [Test]
-        public void CalculateCosineSimilarity_SameVectors_Returns1()
+        public void EvaluateClusterQuality_ShouldReturnValidMetrics()
         {
-            double[] vector1 = { 1, 2, 3 };
-            double[] vector2 = { 1, 2, 3 };
-            double similarity = CosineSimilarityValidator.CalculateCosineSimilarity(vector1, vector2);
-            Assert.That(similarity, Is.EqualTo(1).Within(0.0001));
+            // Arrange
+            var documents = new List<Document>
+            {
+                new Document { SerialNo = 1, ClusterId = 0, Embedding = new double[] { 1.0, 0.0 } },
+                new Document { SerialNo = 2, ClusterId = 0, Embedding = new double[] { 0.9, 0.1 } },
+                new Document { SerialNo = 3, ClusterId = 1, Embedding = new double[] { 0.0, 1.0 } }
+            };
+
+            var service = new CosineSimilarityService(documents);
+
+            // Act
+            var metrics = service.EvaluateClusterQuality();
+
+            // Assert
+            Assert.That(metrics, Is.Not.Null);
+            Assert.That(metrics.AverageIntraClusterSimilarity, Is.InRange(0, 1));
+            Assert.That(metrics.AverageInterClusterSimilarity, Is.InRange(0, 1));
         }
 
         [Test]
-        public void CalculateCosineSimilarity_OppositeVectors_ReturnsNeg1()
+        public void CosineSimilarity_ShouldReturnExpectedValue()
         {
-            double[] vector1 = { 1, 2, 3 };
-            double[] vector2 = { -1, -2, -3 };
-            double similarity = CosineSimilarityValidator.CalculateCosineSimilarity(vector1, vector2);
-            Assert.That(similarity, Is.EqualTo(-1).Within(0.0001));
-        }
+            // Arrange
+            var service = new CosineSimilarityService(new List<Document>());
+            double[] vec1 = { 1, 0 };
+            double[] vec2 = { 0, 1 };
 
-        [Test]
-        public void CalculateCosineSimilarity_OrthogonalVectors_Returns0()
-        {
-            double[] vector1 = { 1, 0 };
-            double[] vector2 = { 0, 1 };
-            double similarity = CosineSimilarityValidator.CalculateCosineSimilarity(vector1, vector2);
-            Assert.That(similarity, Is.EqualTo(0).Within(0.0001));
-        }
+            // Act
+            double result = service.CosineSimilarity(vec1, vec2);
 
-        [Test]
-        public void CalculateCosineSimilarity_DifferentLengths_ThrowsException()
-        {
-            double[] vector1 = { 1, 2, 3 };
-            double[] vector2 = { 1, 2 };
-            Assert.Throws<ArgumentException>(() => CosineSimilarityValidator.CalculateCosineSimilarity(vector1, vector2));
-        }
-
-        [Test]
-        public void IsSimilarEnough_AboveThreshold_ReturnsTrue()
-        {
-            double[] vector1 = { 1, 2, 3 };
-            double[] vector2 = { 1.1, 2.2, 3.3 }; 
-            bool isSimilar = CosineSimilarityValidator.IsSimilarEnough(vector1, vector2, 0.75);
-            ClassicAssert.IsTrue(isSimilar);
-        }
-
-        [Test]
-        public void IsSimilarEnough_BelowThreshold_ReturnsFalse()
-        {
-            double[] vector1 = { 1, 0 };
-            double[] vector2 = { 0, 1 };
-            bool isSimilar = CosineSimilarityValidator.IsSimilarEnough(vector1, vector2, 0.75);
-            ClassicAssert.IsFalse(isSimilar);
-        }
-
-        [Test]
-        public void CreateDocumentVector_ValidDocument_ReturnsCorrectVector()
-        {
-            string document = "This is a test document. This document is a test.";
-            HashSet<string> allWords = new HashSet<string> { "this", "is", "a", "test", "document" };
-            double[] vector = CosineSimilarityValidator.CreateDocumentVector(document, allWords);
-            double[] expectedVector = { 2, 2, 2, 2, 2 };
-            Assert.That(vector, Is.EqualTo(expectedVector));
-        }
-
-        [Test]
-        public void CreateDocumentVector_EmptyDocument_ReturnsZeroVector()
-        {
-            string document = "";
-            HashSet<string> allWords = new HashSet<string> { "this", "is", "a", "test", "document" };
-            double[] vector = CosineSimilarityValidator.CreateDocumentVector(document, allWords);
-            double[] expectedVector = { 0, 0, 0, 0, 0 };
-            Assert.That(vector, Is.EqualTo(expectedVector));
-        }
-
-
-        [Test]
-        public void CalculateCosineSimilarityFromFiles_ValidFiles_ReturnsCorrectSimilarity()
-        {
-            string filePath1 = Path.GetTempFileName();
-            string filePath2 = Path.GetTempFileName();
-            File.WriteAllText(filePath1, "This is a test document.");
-            File.WriteAllText(filePath2, "This document is a test.");
-
-            double similarity = CosineSimilarityValidator.CalculateCosineSimilarityFromFiles(filePath1, filePath2);
-
-            File.Delete(filePath1);
-            File.Delete(filePath2);
-
-            Assert.That(similarity, Is.EqualTo(1).Within(0.0001));
-        }
-
-        [Test]
-        public void CalculateCosineSimilarityFromFiles_FileNotFound_ReturnsNeg1()
-        {
-            string filePath1 = "nonexistent_file1.txt";
-            string filePath2 = "nonexistent_file2.txt";
-
-            double similarity = CosineSimilarityValidator.CalculateCosineSimilarityFromFiles(filePath1, filePath2);
-
-            Assert.That(similarity, Is.EqualTo(-1));
-        }
-
-        [Test]
-        public void AreDocumentsSimilarForClustering_SimilarFiles_ReturnsTrue()
-        {
-            string filePath1 = Path.GetTempFileName();
-            string filePath2 = Path.GetTempFileName();
-            File.WriteAllText(filePath1, "This is a test document.");
-            File.WriteAllText(filePath2, "This document is a test.");
-
-            bool areSimilar = CosineSimilarityValidator.AreDocumentsSimilarForClustering(filePath1, filePath2);
-
-            File.Delete(filePath1);
-            File.Delete(filePath2);
-
-            ClassicAssert.IsTrue(areSimilar);
-        }
-
-        [Test]
-        public void AreDocumentsSimilarForClustering_DifferentFiles_ReturnsFalse()
-        {
-            string filePath1 = Path.GetTempFileName();
-            string filePath2 = Path.GetTempFileName();
-            File.WriteAllText(filePath1, "This is document 1.");
-            File.WriteAllText(filePath2, "This is document 2.");
-
-            bool areSimilar = CosineSimilarityValidator.AreDocumentsSimilarForClustering(filePath1, filePath2);
-
-            File.Delete(filePath1);
-            File.Delete(filePath2);
-
-            ClassicAssert.IsFalse(areSimilar);
-        }
-
-        [Test]
-        public void AreDocumentsSimilarForClustering_FileNotFound_ReturnsFalse()
-        {
-            string filePath1 = "nonexistent_file1.txt";
-            string filePath2 = "nonexistent_file2.txt";
-
-            bool areSimilar = CosineSimilarityValidator.AreDocumentsSimilarForClustering(filePath1, filePath2);
-
-            ClassicAssert.IsFalse(areSimilar);
+            // Assert
+            Assert.That(result, Is.EqualTo(0).Within(1e-5));
         }
     }
 }
+
+//1
+
+//using System.Collections.Generic;
+//using GPTDocumentClustering.Models;
+//using GPTDocumentClustering.Services.Validation;
+//using NUnit.Framework;
+
+//namespace GPTDocumentClustering.Tests
+//{
+//    [TestFixture]
+//    public class CosineSimilarityServiceTests
+//    {
+//        private CosineSimilarityService _service;
+
+//        [SetUp]
+//        public void SetUp()
+//        {
+//            _service = new CosineSimilarityService(new List<Document>());
+//        }
+
+//        [Test]
+//        public void CosineSimilarity_ShouldReturnOne_ForIdenticalVectors()
+//        {
+//            // Arrange
+//            double[] vec1 = { 1, 1, 1 };
+//            double[] vec2 = { 1, 1, 1 };
+
+//            // Act
+//            double result = _service.CosineSimilarity(vec1, vec2);
+
+//            // Assert
+//            Assert.That(result, Is.EqualTo(1).Within(1e-5));
+//        }
+
+//        [Test]
+//        public void CosineSimilarity_ShouldReturnZero_ForOrthogonalVectors()
+//        {
+//            // Arrange
+//            double[] vec1 = { 1, 0 };
+//            double[] vec2 = { 0, 1 };
+
+//            // Act
+//            double result = _service.CosineSimilarity(vec1, vec2);
+
+//            // Assert
+//            Assert.That(result, Is.EqualTo(0).Within(1e-5));
+//        }
+
+//        [Test]
+//        public void CosineSimilarity_ShouldThrowException_ForZeroVector()
+//        {
+//            // Arrange
+//            double[] vec1 = { 0, 0, 0 };
+//            double[] vec2 = { 1, 1, 1 };
+
+//            // Act & Assert
+//            Assert.Throws<System.DivideByZeroException>(() => _service.CosineSimilarity(vec1, vec2));
+//        }
+//    }
+//}
+
+//2
+
+//[TestFixture]
+//public class CosineSimilarityServiceTests
+//{
+//    private CosineSimilarityService _service;
+
+//    [SetUp]
+//    public void Setup()
+//    {
+//        _service = new CosineSimilarityService();
+//    }
+
+//    [Test]
+//    public void CosineSimilarity_ShouldReturnOne_ForIdenticalVectors()
+//    {
+//        var vec1 = new double[] { 1, 1, 1 };
+//        var vec2 = new double[] { 1, 1, 1 };
+
+//        var result = _service.CosineSimilarity(vec1, vec2);
+
+//        Assert.That(result, Is.EqualTo(1.0), "Identical vectors should have similarity of 1.");
+//    }
+
+//    [Test]
+//    public void CosineSimilarity_ShouldReturnZero_ForOrthogonalVectors()
+//    {
+//        var vec1 = new double[] { 1, 0 };
+//        var vec2 = new double[] { 0, 1 };
+
+//        var result = _service.CosineSimilarity(vec1, vec2);
+
+//        Assert.That(result, Is.EqualTo(0.0), "Orthogonal vectors should have similarity of 0.");
+//    }
+
+//    [Test]
+//    public void CosineSimilarity_ShouldThrowException_ForZeroVector()
+//    {
+//        var vec1 = new double[] { 0, 0, 0 };
+//        var vec2 = new double[] { 1, 1, 1 };
+
+//        Assert.Throws<DivideByZeroException>(() => _service.CosineSimilarity(vec1, vec2), "Zero vector should cause a divide by zero exception.");
+//    }
+
+//    [Test]
+//    public void CosineSimilarity_ShouldBeSymmetric()
+//    {
+//        var vec1 = new double[] { 0.5, 0.6, 0.7 };
+//        var vec2 = new double[] { 0.1, 0.2, 0.3 };
+
+//        var result1 = _service.CosineSimilarity(vec1, vec2);
+//        var result2 = _service.CosineSimilarity(vec2, vec1);
+
+//        Assert.That(result1, Is.EqualTo(result2), "Cosine similarity should be symmetric.");
+//    }
+//}
