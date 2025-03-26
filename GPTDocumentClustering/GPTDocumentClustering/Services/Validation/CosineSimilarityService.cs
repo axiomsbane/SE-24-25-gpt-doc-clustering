@@ -56,6 +56,7 @@ public class CosineSimilarityService
                 if (comparisons > 0)
                 {
                     double avgClusterSimilarity = clusterSimilarity / comparisons;
+                    Console.WriteLine($"Cluster similarity: {avgClusterSimilarity:P2}");
                     var clusterId = cluster[0].ClusterId;
                     if (clusterId != null)
                         metrics.IntraClusterSimilarities[clusters.Keys.ToList().IndexOf(clusterId.Value)] =
