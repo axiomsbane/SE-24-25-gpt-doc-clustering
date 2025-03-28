@@ -69,21 +69,21 @@ This process generates the following outputs:
 
 *  `categories.png`: A 2D scatter plot of documents, colored according to their original category.
 
-![categories.png](../Outputs/3072_size_vector/categories.png)
+![categories.png](../Outputs/3072_size_vector/categories.png "2D scatter plot of documents, colored according to their original category")
 
 *  `clusters.png`: A 2D scatter plot of documents, colored according to their cluster assigned by the
 K-Means clustering algorithm. 
 As it can be seen, most of the points match the original groupings they belong to. But some points 
 that lie on the boundary of the original groupings are mis-classified. 
 
-![clusters.png](../Outputs/3072_size_vector/clusters.png)
+![clusters.png](../Outputs/3072_size_vector/clusters.png "2D scatter plot of documents, colored according to their cluster assigned by the K-Means clustering algorithm.")
 
 * `heatmap.png` : A 2D Heatmap that shows that the embeddings belonging to the same category have similar
 patterns of the scalar values in the vector. For example : For category sport, at position 100 in the vector, 
 most of the embeddings might have a high value. This can be seen by observing dark and light colored patters in 
 each of the sections of the heatmap that represent each category.
 
-![categories.png](../Outputs/heatmap.png)
+![categories.png](../Outputs/heatmap.png "Heatmap depicting embedding vectors")
 
 2.  **Evaluation Report (TXT File: `cluster_evaluation.txt`):**
 
@@ -171,6 +171,13 @@ This project relies on the following dependencies:
                         that is present in Dataset folder (dataset.csv)
 4. Build and run the project.
 5. The Output folder will be generated in bin/ folder.
+
+#### Instructions for adding environment variables: 
+![categories.png](./Miscelleneous/DEBUG.jpeg)
+
+![categories.png](./Miscelleneous/DEBUG_OPT.jpeg)
+
+![categories.png](./Miscelleneous/ENV_VAR.jpeg)
 
 ### Prerequisites
 
