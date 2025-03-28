@@ -172,6 +172,13 @@ This project relies on the following dependencies:
 4. Build and run the project.
 5. The Output folder will be generated in bin/ folder.
 
+#### Instructions for adding environment variables: 
+![categories.png](./Miscelleneous/DEBUG.jpeg)
+
+![categories.png](./Miscelleneous/DEBUG_OPT.jpeg)
+
+![categories.png](./Miscelleneous/ENV_VAR.jpeg)
+
 ### Prerequisites
 
 - **Programming Language**: .NET Core
