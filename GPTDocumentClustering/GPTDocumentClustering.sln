@@ -5,7 +5,7 @@ VisualStudioVersion = 17.12.35514.174 d17.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GPTDocumentClustering", "GPTDocumentClustering\GPTDocumentClustering.csproj", "{CDFCD9E9-406C-4310-88E2-44E942FB6307}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnittestGPT", "UnittestGPT\UnittestGPT.csproj", "{08C57763-EB04-46C5-9B21-CFE72BE91E1F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GPTDocumentClusteringTest", "GPTDocumentClusteringTest\GPTDocumentClusteringTest.csproj", "{08C57763-EB04-46C5-9B21-CFE72BE91E1F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
