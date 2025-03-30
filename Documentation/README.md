@@ -18,6 +18,8 @@ The dataset is organized in a CSV file format.
 |--|--|
 | A sizeable muliline text document <br> of about 3000 characters.  | Possible values : 0,1,2,3 |
 
+*Table 1: Dataset Description*
+
 **Label Mappings** : 
 | Value |Meaning  |
 |--|--|
@@ -25,6 +27,8 @@ The dataset is organized in a CSV file format.
 | 1 | Sport |
 | 2 |  Technology|
 | 3 | Entertainment |
+
+*Table 2: Dataset Categories*
 
 
 ## 3. Process & Output Description
@@ -181,15 +185,17 @@ This project relies on the following dependencies:
 #### Instructions for adding environment variables: 
 ![categories.png](./Miscelleneous/DEBUG.jpeg)
 
-step 1: Go to Debug 
+*Figure 4: step 1- Go to Debug*
+
+
 
 ![categories.png](./Miscelleneous/DEBUG_OPT.jpeg)
 
-step 2: Click on debug properties 
+*Figure 5: step 2- Click on debug properties*
 
 ![categories.png](./Miscelleneous/ENV_VAR.jpeg)
 
-step 3: Enter variables for OpenAI key and Input dataset
+*Figure 6: step 3- Enter variables for OpenAI key and Input dataset*
 
 ### Prerequisites
 
