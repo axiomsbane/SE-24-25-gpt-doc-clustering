@@ -18,6 +18,8 @@ The dataset is organized in a CSV file format.
 |--|--|
 | A sizeable muliline text document <br> of about 3000 characters.  | Possible values : 0,1,2,3 |
 
+*Table 1: Dataset Description*
+
 **Label Mappings** : 
 | Value |Meaning  |
 |--|--|
@@ -25,6 +27,8 @@ The dataset is organized in a CSV file format.
 | 1 | Sport |
 | 2 |  Technology|
 | 3 | Entertainment |
+
+*Table 2: Dataset Categories*
 
 
 ## 3. Process & Output Description
@@ -71,6 +75,8 @@ This process generates the following outputs:
 
 ![categories.png](../Outputs/3072_size_vector/categories.png "2D scatter plot of documents, colored according to their original category")
 
+*Figure 1: Document visualization by original categories*
+
 *  `clusters.png`: A 2D scatter plot of documents, colored according to their cluster assigned by the
 K-Means clustering algorithm. 
 As it can be seen, most of the points match the original groupings they belong to. But some points 
@@ -78,12 +84,16 @@ that lie on the boundary of the original groupings are mis-classified.
 
 ![clusters.png](../Outputs/3072_size_vector/clusters.png "2D scatter plot of documents, colored according to their cluster assigned by the K-Means clustering algorithm.")
 
+*Figure 2: Document visualization by clusters*
+
 * `heatmap.png` : A 2D Heatmap that shows that the embeddings belonging to the same category have similar
 patterns of the scalar values in the vector. For example : For category sport, at position 100 in the vector, 
 most of the embeddings might have a high value. This can be seen by observing dark and light colored patters in 
 each of the sections of the heatmap that represent each category.
 
 ![categories.png](../Outputs/heatmap.png "Heatmap depicting embedding vectors")
+
+*Figure 3: Embedding vectors heatmap*
 
 2.  **Evaluation Report (TXT File: `cluster_evaluation.txt`):**
 
@@ -175,9 +185,17 @@ This project relies on the following dependencies:
 #### Instructions for adding environment variables: 
 ![categories.png](./Miscelleneous/DEBUG.jpeg)
 
+*Figure 4: step 1- Go to Debug*
+
+
+
 ![categories.png](./Miscelleneous/DEBUG_OPT.jpeg)
 
+*Figure 5: step 2- Click on debug properties*
+
 ![categories.png](./Miscelleneous/ENV_VAR.jpeg)
+
+*Figure 6: step 3- Enter variables for OpenAI key and Input dataset*
 
 ### Prerequisites
 
