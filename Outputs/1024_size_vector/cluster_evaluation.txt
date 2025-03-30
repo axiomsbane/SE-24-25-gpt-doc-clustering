@@ -1,0 +1,26 @@
+=== Document Clustering Evaluation ===
+
+Overall Metrics:
+Average Intra-Cluster Similarity: 0,3201
+Average Inter-Cluster Similarity: 0,2012
+Average Category Similarity: 0,3197
+
+Silhouette Coefficient: 0,3714 (higher is better)
+
+Cluster to Category Mapping:
+Cluster 1 -> Category '0' (Purity: 100,00 %)
+Cluster 3 -> Category '3' (Purity: 95,92 %)
+Cluster 0 -> Category '1' (Purity: 98,04 %)
+Cluster 2 -> Category '2' (Purity: 94,12 %)
+
+Cluster Details:
+Cluster 0 Intra-Similarity: 0,3750
+Cluster 1 Intra-Similarity: 0,2713
+Cluster 2 Intra-Similarity: 0,3097
+Cluster 3 Intra-Similarity: 0,3250
+
+Category Details:
+Category 0 Intra-Similarity: 0,3698
+Category 1 Intra-Similarity: 0,3109
+Category 2 Intra-Similarity: 0,3251
+Category 3 Intra-Similarity: 0,2728
