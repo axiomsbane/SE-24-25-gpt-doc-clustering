@@ -65,7 +65,7 @@ A text file is generated with various parameters such as Cluster purity, Intra-C
 
 #### 5. Output explanations
 
-This process generates the following outputs:
+This process generates the following outputs in the Output folder which will get generated in bin/Debug/net9.0 location :
 
   
 
