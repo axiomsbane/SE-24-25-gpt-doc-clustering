@@ -28,8 +28,15 @@ class Program
         // 2. Embedding Service: Converts text documents to numerical vectors
         var embeddingService = new EmbeddingService();
 
+        
+        Console.WriteLine("Please choose the embedding size that you want to use: \n");
+        Console.WriteLine("The options are: \n 1 -> 512 \n 2 -> 1024 \n 3 -> 2048 \n 4 -> 3072 \n");
+        Console.WriteLine("Please type 1, 2, 3 or 4 and press enter : \n ");
+        var key = int.Parse(Console.ReadLine() ?? "3072");
+        Console.WriteLine($"\n You have chosen size {AppConstants.DataConstants.EmbeddingDict[key]}");
 
-        // var visualizationService = new ClusterVisualizationService();
+        AppConstants.OpenAI.EmbeddingLength = AppConstants.DataConstants.EmbeddingDict[key];
+        Console.WriteLine($"Embedding length set is {AppConstants.OpenAI.EmbeddingLength}");
 
         // 3. Clustering Service: Groups similar documents together
         var clusteringService = new ClusteringService();
