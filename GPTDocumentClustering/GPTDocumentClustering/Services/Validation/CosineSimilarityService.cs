@@ -1,5 +1,7 @@
 using System.Diagnostics;
+using GPTDocumentClustering.Helper;
 using GPTDocumentClustering.Models;
+using ScottPlot;
 
 namespace GPTDocumentClustering.Services.Validation;
 
@@ -22,8 +24,63 @@ public class CosineSimilarityService
             Path.Combine(outputFolder, "cluster_evaluation.txt"),
             FormatEvaluationResults(metrics)
         );
+        
+        CosineSimilarityMatrix(Path.Combine(outputFolder, "cosineSimilarity.png"));
     }
 
+    private void CosineSimilarityMatrix(string outputPath)
+    {
+        int embeddingCount = _documents.Count;
+        var embeddings = _documents.Select(doc => doc.Embedding).ToList();
+        var labels = _documents.Select(doc => doc.Category).ToList();
+        // Sort embeddings by their category
+        var sortedData = labels
+            .Select((label, index) => new { Label = label, Embedding = embeddings[index] })
+            .OrderBy(item => item.Label)
+            .ToList();
+        
+        double[,] heatmapData = new double[embeddingCount, embeddingCount];
+        
+        var sortedEmbeddings = sortedData.Select(item => item.Embedding).ToList();
+        var sortedLabels = sortedData.Select(item => item.Label).ToList();
+        
+        for (int i = 0; i < embeddingCount; i++)
+        {
+            for (int j = 0; j < embeddingCount; j++)
+            {
+                heatmapData[i, j] = CosineSimilarity(sortedEmbeddings[i], sortedEmbeddings[j]);
+            }
+        }
+        
+        // Create the plot
+        var plt = new Plot();
+        
+        // Add heatmap
+        var hm = plt.Add.Heatmap(heatmapData);
+        plt.Add.ColorBar(hm);
+        
+        // Label customization
+        plt.Title("Cosine Similarity Matrix Heatmap");
+        plt.XLabel("Document Index");
+        plt.YLabel("Document Index");
+        
+        plt.Axes.SetLimitsY(bottom: 200, top: 0);
+        
+
+        // Add label dividers and annotations
+        string currentLabel = sortedLabels[0];
+        int startIdx = 0;
+        
+        // plt.Add.Annotation($"Label Top to Bottom:  \n{AppConstants.DataConstants.MyDictionary["3"]} " +
+        //                    $"\n{AppConstants.DataConstants.MyDictionary["2"]} " +
+        //                    $"\n{AppConstants.DataConstants.MyDictionary["1"]} " +
+        //                    $"\n{AppConstants.DataConstants.MyDictionary["0"]}");
+        
+        // Save the plot
+        plt.Save(outputPath, 1200, 800);
+        Console.WriteLine($"Cosine Similarity matrix saved to {outputPath}");
+        
+    }
 
     // Performs comprehensive evaluation of document clustering quality
     private ClusterEvaluationMetrics EvaluateClusterQuality()
